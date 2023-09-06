@@ -3,7 +3,7 @@ with lib;
 
 {
   imports = [ ];
-services.gitlab-runner.enable = true;
+  services.gitlab-runner.enable = true;
   systemd.services.gitlab-runner.serviceConfig =  let config =
       (pkgs.formats.toml{}).generate "gitlab-runner.toml" {
         concurrent = 1;
