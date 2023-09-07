@@ -12,7 +12,7 @@ with lib;
             name = "Nix runner";
             url = "https://gitlab.com";
             id = 12354;
-            token = "glrt-KNCM6zCZWKmQ2qmd_jQX";
+            token = "<toset>";
             executor = "docker";
             docker = {
               image = "debian:12";
