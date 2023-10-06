@@ -44,11 +44,13 @@ with lib;
      ExecStartPre = mkForce "!${configureScript}";
      ExecReload = mkForce "!${configureScript}";
    };
+
+  # Autocleanup every 15 mins
   systemd.timers."gitlab-runner-cleanup" = {
     wantedBy = [ "timers.target" ];
       timerConfig = {
         OnBootSec = "5m";
-        OnUnitActiveSec = "5m";
+        OnUnitActiveSec = "15m";
         Unit = "gitlab-runner-cleanup.service";
       };
   };
