@@ -12,14 +12,19 @@ with lib;
             name = "Nix runner";
             url = "https://gitlab.com";
             id = 12354;
-            token = "<toset>";
+            token = "glrt-PMzRpEHznRa7qUPrNnJW";
             executor = "docker";
             docker = {
               image = "debian:12";
               pull_policy = "if-not-present";
               allowed_pull_policies = ["if-not-present"];
+              privileged = true;
+              volumes = [
+               "/var/run/docker.sock:/var/run/docker.sock"
+              ];
             };
             environment = [
+		
             ];
           }
         ];
@@ -39,4 +44,23 @@ with lib;
      ExecStartPre = mkForce "!${configureScript}";
      ExecReload = mkForce "!${configureScript}";
    };
+  systemd.timers."gitlab-runner-cleanup" = {
+    wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "5m";
+        OnUnitActiveSec = "5m";
+        Unit = "gitlab-runner-cleanup.service";
+      };
+  };
+  
+  systemd.services."gitlab-runner-cleanup" = {
+    script = ''
+      set -eu
+      ${pkgs.docker}/bin/docker system prune --all --force
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+    };
+  };
 }
