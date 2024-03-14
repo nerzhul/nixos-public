@@ -99,12 +99,12 @@ with lib;
 
       serviceConfig = {
         ExecStart = ''${kubernetes}/bin/kubelet \
-	--bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig \
-	--kubeconfig=/etc/kubernetes/kubelet.conf \
-	--config=/etc/kubernetes/kubelet.yml \
-	--cert-dir=/etc/kubernetes/pki \
-  --fail-swap-on=false \
-	--container-runtime-endpoint=unix:///run/containerd/containerd.sock'';
+        --bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig \
+        --kubeconfig=/etc/kubernetes/kubelet.conf \
+        --config=/etc/kubernetes/kubelet.yml \
+        --cert-dir=/etc/kubernetes/pki \
+        --fail-swap-on=false \
+        --container-runtime-endpoint=unix:///run/containerd/containerd.sock'';
         Restart = "always";
         RestartSec = 10;
         OOMScoreAdjust = -999;
