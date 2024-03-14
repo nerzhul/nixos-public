@@ -3,5 +3,5 @@
   imports = [
     ./containerd.nix
     ./kubelet.nix
-  ]
+  ];
 }
