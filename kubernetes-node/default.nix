@@ -20,5 +20,6 @@
     "resolv_conf"
     "ca-certs"
     "users-groups"
+    "disable_ec2_metadata"
   ];
 }
