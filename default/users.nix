@@ -14,4 +14,13 @@ with lib;
     ];
     packages = with pkgs; [ ]; # I assume this can be removed, but not sure
   };
+
+  security.sudo.extraRules = [{
+    users = [ "nrz" ];
+    commands = [
+      { command = "ALL" ;
+         options= [ "NOPASSWD" ]; # "SETENV" # Adding the following could be a good idea
+      }
+    ];
+  }];
 }
