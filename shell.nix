@@ -6,7 +6,7 @@ pkgs.mkShell {
   env.LANG = "C.UTF-8";
   env.LC_ALL = "C.UTF-8";
 
-  packages = [];
+  packages = [ ];
   shellHook = ''
   '';
 }
