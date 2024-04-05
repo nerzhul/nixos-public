@@ -18,7 +18,7 @@ let
 
     buildInputs = [ ];
 
-    BUILDTAGS = [ "no_btrfs" ];
+    BUILDTAGS = [ "no_btrfs no_zfs" ];
 
     buildPhase = ''
       runHook preBuild
@@ -142,7 +142,7 @@ with lib;
 		schedule_delay = "0s"
 		startup_delay = "100ms"
 	'';
-	
+
     boot.kernel = {
       sysctl = {
         "net.ipv4.ip_forward" = true;
