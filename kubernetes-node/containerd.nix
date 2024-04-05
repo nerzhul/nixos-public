@@ -3,13 +3,13 @@ let
   cfg = config.services.containerd;
   containerd = with pkgs; buildGoModule rec {
     pname = "containerd";
-    version = "1.7.13";
+    version = "1.7.14";
 
     src = fetchFromGitHub {
       owner = "containerd";
       repo = "containerd";
       rev = "v${version}";
-      hash = "sha256-y3CYDZbA2QjIn1vyq/p1F1pAVxQHi/0a6hGWZCRWzyk=";
+      hash = "sha256-okTz2UCF5LxOdtLDBy1pN2to6WHi+I0jtR67sn7Qrbk=";
     };
 
     vendorHash = null;
@@ -30,7 +30,6 @@ let
     installPhase = ''
       runHook preInstall
       install -Dm555 bin/* -t $out/bin
-	  mkdir -p $out/etc/containerd/
       installShellCompletion --bash contrib/autocomplete/ctr
       installShellCompletion --zsh --name _ctr contrib/autocomplete/zsh_autocomplete
       runHook postInstall
