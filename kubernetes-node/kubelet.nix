@@ -88,6 +88,9 @@ with lib;
       };
     };
 
+    # Disable firewall
+    networking.firewall.enable = false;
+
     systemd.services.kubelet = {
       enable = true;
       description = "Kubernetes Kubelet";
