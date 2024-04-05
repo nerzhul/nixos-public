@@ -64,6 +64,7 @@ with lib;
   config = mkIf cfg.enable {
     environment.systemPackages = [ containerd ];
 	environment.etc."containerd/config.toml".text = lib.mkForce ''
+version = 2
 root = "/var/lib/containerd"
 state = "/run/containerd"
 oom_score = 0
