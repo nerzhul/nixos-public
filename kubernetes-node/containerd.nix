@@ -78,7 +78,7 @@ with lib;
 
       serviceConfig = {
         ExecStartPre = "${pkgs.kmod}/bin/modprobe overlay";
-        ExecStart = "${containerd}/bin/containerd";
+        ExecStart = "${containerd}/bin/containerd --config /etc/containerd/config.toml";
         Restart = "always";
         RestartSec = 5;
         Delegate = "yes";
