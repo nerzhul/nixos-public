@@ -68,6 +68,26 @@ with lib;
         type = with types; bool;
         description = ''Starts kubelet daemon.'';
       };
+      dnsClusterIP = mkOption {
+        default = "10.0.0.1";
+        type = types.str;
+        description = ''Cluster DNS IP address.'';
+      };
+      clusterDomain = mkOption {
+        default = "cluster.local";
+        type = types.str;
+        description = ''Cluster DNS domain.'';
+      };
+      systemReservedCPU = mkOption {
+        default = "250m";
+        type = types.str;
+        description = ''Reserved CPU for system.'';
+      };
+      systemReservedMemory = mkOption {
+        default = "1Gi";
+        type = types.str;
+        description = ''Reserved memory for system.'';
+      };
     };
   };
   config = mkIf kubeletCfg.enable {
@@ -90,6 +110,34 @@ with lib;
 
     # Disable firewall
     networking.firewall.enable = false;
+    environment.etc."kubernetes/kubelet.yml".text = ''
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+authorization:
+  mode: Webhook
+authentication:
+  webhook:
+    enabled: yes
+  x509:
+    clientCAFile: "/etc/kubernetes/pki/ca.crt"
+cgroupDriver: "cgroupfs"
+cgroupRoot: "/"
+staticPodPath: "/etc/kubernetes/manifests"
+evictionHard:
+  nodefs.available: "1G"
+  nodefs.inodesFree: "5%"
+  imagefs.available: "1G"
+  imagefs.inodesFree: "5%"
+  memory.available: "128Mi"
+systemReserved:
+  cpu: "${kubeletCfg.systemReservedCPU}"
+  memory: "${kubeletCfg.systemReservedMemory}"
+clusterDomain: "${kubeletCfg.clusterDomain}"
+clusterDNS:
+  - "${kubeletCfg.dnsClusterIP}"
+rotateCertificates: true
+'';
 
     systemd.services.kubelet = {
       enable = true;
