@@ -30,6 +30,7 @@ let
     installPhase = ''
       runHook preInstall
       install -Dm555 bin/* -t $out/bin
+	  mkdir -p $out/etc/containerd/testme
       installShellCompletion --bash contrib/autocomplete/ctr
       installShellCompletion --zsh --name _ctr contrib/autocomplete/zsh_autocomplete
       runHook postInstall
