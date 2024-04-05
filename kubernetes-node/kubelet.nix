@@ -88,6 +88,26 @@ with lib;
         type = types.str;
         description = ''Reserved memory for system.'';
       };
+      apiServerURL = mkOption {
+        default = "https://localhost:6443";
+        type = types.str;
+        description = ''API server URL.'';
+      };
+      apiCAEncoded = mkOption {
+        default = "";
+        type = types.str;
+        description = ''API server CA certificate encoded.'';
+      };
+      bootstrapConfigClusterName = mkOption {
+        default = "k8s";
+        type = types.str;
+        description = ''Bootstrap kubeconfig context name.'';
+      };
+      bootstrapToken = mkOption {
+        default = "setme.todo";
+        type = types.str;
+        description = ''Bootstrap token.'';
+      };
     };
   };
   config = mkIf kubeletCfg.enable {
@@ -137,6 +157,26 @@ clusterDomain: "${kubeletCfg.clusterDomain}"
 clusterDNS:
   - "${kubeletCfg.dnsClusterIP}"
 rotateCertificates: true
+'';
+    environment.etc."kubernetes/bootstrap.kubeconfig".text = ''
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: ${kubeletCfg.apiCAEncoded}
+    server: ${kubeletCfg.apiServerURL}
+  name: ${kubeletCfg.bootstrapConfigClusterName}
+contexts:
+- context:
+    cluster: ${kubeletCfg.bootstrapConfigClusterName}
+    user: kubelet-bootstrap
+  name: kubelet-bootstrap@${kubeletCfg.bootstrapConfigClusterName}
+current-context: kubelet-bootstrap@${kubeletCfg.bootstrapConfigClusterName}
+kind: Config
+preferences: {}
+users:
+- name: kubelet-bootstrap
+  user:
+    token: ${kubeletCfg.bootstrapToken}
 '';
 
     systemd.services.kubelet = {
