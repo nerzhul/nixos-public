@@ -3,13 +3,13 @@ let
   kubeletCfg = config.services.kubelet;
   kubernetes = with pkgs; buildGoModule rec {
     pname = "kubernetes";
-    version = "1.28.7";
+    version = "1.29.3";
 
     src = fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
-      hash = "sha256-Qhx5nB4S5a8NlRhxQrD1U4oOCMLxJ9XUk2XemwAwe5k=";
+      hash = "sha256-mtYxFy2d892uMLrtaR6ao07gjbThuGa7bzauwvJ0WOo=";
     };
 
     vendorHash = null;
