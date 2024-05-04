@@ -128,6 +128,8 @@ with lib;
       };
     };
 
+    environment.systemPackages = [ pkgs.nfs-utils ];
+
     # Disable firewall
     networking.firewall.enable = false;
     environment.etc."kubernetes/kubelet.yml".text = ''
