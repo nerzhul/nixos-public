@@ -186,7 +186,7 @@ users:
       documentation = [ "https://github.com/kubernetes/kubernetes" ];
       after = [ "network.target" ];
       requires = [ "network-online.target" ];
-      path = [ pkgs.mount pkgs.umount ];
+      path = [ pkgs.mount pkgs.umount pkgs.nfs-utils ];
 
       serviceConfig = {
         ExecStart = ''${kubernetes}/bin/kubelet \
