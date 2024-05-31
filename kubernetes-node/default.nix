@@ -3,6 +3,7 @@
   imports = [
     ./containerd.nix
     ./kubelet.nix
+    ./kube_scheduler.nix
   ];
 
   services.containerd.enable = true;
