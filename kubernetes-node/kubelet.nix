@@ -101,7 +101,7 @@ with lib;
         type = types.str;
         description = ''API server CA certificate encoded.'';
       };
-      bootstrapConfigClusterName = mkOption {
+      clusterName = mkOption {
         default = "k8s";
         type = types.str;
         description = ''Bootstrap kubeconfig context name.'';
@@ -169,13 +169,13 @@ clusters:
 - cluster:
     certificate-authority-data: ${kubeletCfg.apiCAEncoded}
     server: ${kubeletCfg.apiServerURL}
-  name: ${kubeletCfg.bootstrapConfigClusterName}
+  name: ${kubeletCfg.clusterName}
 contexts:
 - context:
-    cluster: ${kubeletCfg.bootstrapConfigClusterName}
+    cluster: ${kubeletCfg.clusterName}
     user: kubelet-bootstrap
-  name: kubelet-bootstrap@${kubeletCfg.bootstrapConfigClusterName}
-current-context: kubelet-bootstrap@${kubeletCfg.bootstrapConfigClusterName}
+  name: kubelet-bootstrap@${kubeletCfg.clusterName}
+current-context: kubelet-bootstrap@${kubeletCfg.clusterName}
 kind: Config
 preferences: {}
 users:

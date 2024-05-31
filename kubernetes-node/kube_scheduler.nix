@@ -12,9 +12,56 @@ with lib;
         type = with types; bool;
         description = ''Enable kube-scheduler static pod.'';
       };
+      apiServerURL = mkOption {
+        default = "https://localhost:6443";
+        type = types.str;
+        description = ''API server URL.'';
+      };
+      apiCAEncoded = mkOption {
+        default = "";
+        type = types.str;
+        description = ''API server CA certificate encoded.'';
+      };
+      clusterName = mkOption {
+        default = "k8s";
+        type = types.str;
+        description = ''Bootstrap kubeconfig context name.'';
+      };
+      schedulerCertEncoded = mkOption {
+        default = "";
+        type = types.str;
+        description = ''Scheduler client certificate encoded.'';
+      };
+      schedulerKeyEncoded = mkOption {
+        default = "";
+        type = types.str;
+        description = ''Scheduler client key encoded.'';
+      };
     };
   };
   config = mkIf kubeSchedulerCfg.enable {
+    environment.etc."kubernetes/scheduler.kubeconfig".text = ''
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: ${kubeSchedulerCfg.apiCAEncoded}
+    server: ${kubeSchedulerCfg.apiServerURL}
+  name: ${kubeSchedulerCfg.clusterName}
+contexts:
+- context:
+    cluster: ${kubeSchedulerCfg.clusterName}
+    user: system:kube-scheduler
+  name: kube-scheduler@${kubeSchedulerCfg.clusterName}
+current-context: kube-scheduler@${kubeSchedulerCfg.clusterName}
+kind: Config
+preferences: {}
+users:
+- name: "system:kube-scheduler"
+  user:
+    client-certificate-data: ${kubeSchedulerCfg.schedulerCertEncoded}
+    client-key-data: ${kubeSchedulerCfg.schedulerKeyEncoded}
+'';
+
     environment.etc."kubernetes/scheduler.yaml".text = ''
 apiVersion: kubescheduler.config.k8s.io/v1
 kind: KubeSchedulerConfiguration
