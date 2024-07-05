@@ -2,7 +2,7 @@
 with lib;
 
 {
-  nixpkgs.config.allowUnfree;
+  nixpkgs.config.allowUnfree = true;
 
   users.users.nrz = {
     isNormalUser = true;
