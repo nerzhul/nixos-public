@@ -17,6 +17,8 @@ with lib;
       vscode
       go
       direnv
+      pkgs.gnomeExtensions.appindicator
+      gcr
     ];
   };
 
