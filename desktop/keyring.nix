@@ -2,6 +2,7 @@
 with lib;
 
 {
+  # Remember that both SSH private key and public key must be present to make this work
   services.gnome.gnome-keyring.enable = true;
   security = {
     pam.services = {
