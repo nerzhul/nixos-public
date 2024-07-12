@@ -21,6 +21,7 @@ with lib;
       direnv
       pkgs.gnomeExtensions.appindicator
       gcr
+      signal-desktop
     ];
   };
 
