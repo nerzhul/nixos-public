@@ -16,6 +16,7 @@ with lib;
       gnupg
       vscode
       go
+      delve # golang debugger
       direnv
       pkgs.gnomeExtensions.appindicator
       gcr
