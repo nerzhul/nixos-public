@@ -22,6 +22,7 @@ with lib;
       qemu_kvm
       opensc
       ccid
+      yubikey-personalization-gui
     ];
   };
 }
