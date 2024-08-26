@@ -14,11 +14,14 @@ with lib;
     };
   };
   config = mkIf workCfg.enable {
+    services.udev.packages = [ pkgs.yubikey-personalization ];
     environment.systemPackages = with pkgs; [
       mkosi
       python312Packages.ansible-core
       qemu
       qemu_kvm
+      opensc
+      ccid
     ];
   };
 }
