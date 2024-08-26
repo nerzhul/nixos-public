@@ -17,6 +17,8 @@ with lib;
     environment.systemPackages = with pkgs; [
       mkosi
       python312Packages.ansible-core
+      qemu
+      qemu_kvm
     ];
   };
 }
