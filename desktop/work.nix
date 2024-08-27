@@ -17,6 +17,7 @@ with lib;
     services.udev.packages = [ pkgs.yubikey-personalization ];
     environment.systemPackages = with pkgs; [
       mkosi
+      kustomize
       python312Packages.ansible-core
       qemu
       qemu_kvm
