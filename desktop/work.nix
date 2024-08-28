@@ -23,6 +23,7 @@ with lib;
       qemu_kvm
       opensc
       ccid
+      tailscale
       yq
       yubikey-personalization-gui
     ];
