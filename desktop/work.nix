@@ -18,6 +18,7 @@ with lib;
     environment.systemPackages = with pkgs; [
       mkosi
       kustomize
+      gh
       python312Packages.ansible-core
       qemu
       qemu_kvm
