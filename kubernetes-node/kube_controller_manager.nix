@@ -127,6 +127,9 @@ spec:
           mountPath: /etc/kubernetes/controller-manager.kubeconfig
         - name: pki
           mountPath: /etc/kubernetes/pki
+        - name: nixstore
+          mountPath: /nix/store
+          readOnly: true
       securityContext:
         runAsNonRoot: true
         runAsUser: 10257
@@ -157,6 +160,12 @@ spec:
     - name: pki
       hostPath:
         path: /etc/static/kubernetes/pki
+        type: Directory
+      '';
+    # Horrible hack to remove in the future
+    - name: nixstore
+      hostPath:
+        path: /nix/store
         type: Directory
       '';
   };
