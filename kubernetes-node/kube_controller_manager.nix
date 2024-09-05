@@ -53,6 +53,11 @@ with lib;
 		type = types.str;
 		description = ''Cluster CSR signing duration.'';
 	  };
+	  verbosity = mkOption {
+		default = 1;
+		type = types.int;
+		description = ''Verbosity level.'';
+	  };
     };
   };
   config = mkIf kubeControllerManagerCfg.enable {
@@ -116,7 +121,7 @@ spec:
         - --allocate-node-cidrs=true
         - --cluster-signing-duration=${kubeControllerManagerCfg.clusterSigningDuration}
         - --logging-format=json
-        - --v=2
+        - --v=${kubeControllerManagerCfg.verbosity}
         - --feature-gates=
       ports:
         - name: https

@@ -1,5 +1,6 @@
 { config, pkgs, lib, ... }:
 let
+  b64 = import ../util/base64.nix { inherit lib; };
   kubeletCfg = config.services.kubelet;
   kubernetes = with pkgs; buildGoModule rec {
     pname = "kubernetes";
@@ -96,10 +97,10 @@ with lib;
         type = types.str;
         description = ''API server URL.'';
       };
-      apiCAEncoded = mkOption {
+      apiCACert = mkOption {
         default = "";
         type = types.str;
-        description = ''API server CA certificate encoded.'';
+        description = ''API server CA certificate.'';
       };
       clusterName = mkOption {
         default = "k8s";
@@ -167,7 +168,7 @@ rotateCertificates: true
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority-data: ${kubeletCfg.apiCAEncoded}
+    certificate-authority-data: ${b64.toBase64 kubeletCfg.apiCACert}
     server: ${kubeletCfg.apiServerURL}
   name: ${kubeletCfg.clusterName}
 contexts:

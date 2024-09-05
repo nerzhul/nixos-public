@@ -1,5 +1,6 @@
 { config, pkgs, lib, ... }:
 let
+  b64 = import ../util/base64.nix { inherit lib; };
   kubeSchedulerCfg = config.services.kubeScheduler;
   version = "v1.29.5";
 in
@@ -17,7 +18,7 @@ with lib;
         type = types.str;
         description = ''API server URL.'';
       };
-      apiCAEncoded = mkOption {
+      apiCACert = mkOption {
         default = "";
         type = types.str;
         description = ''API server CA certificate encoded.'';
@@ -44,7 +45,7 @@ with lib;
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority-data: ${kubeSchedulerCfg.apiCAEncoded}
+    certificate-authority-data: ${b64.toBase64 kubeSchedulerCfg.apiCACert}
     server: ${kubeSchedulerCfg.apiServerURL}
   name: ${kubeSchedulerCfg.clusterName}
 contexts:
