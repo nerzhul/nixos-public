@@ -139,7 +139,7 @@ spec:
         type: File
     - name: pki
       hostPath:
-        path: /etc/kubernetes/pki
+        path: /etc/static/kubernetes/pki
         type: Directory
       '';
   };

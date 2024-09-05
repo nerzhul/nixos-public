@@ -18,10 +18,10 @@ with lib;
         type = types.str;
         description = ''API server URL.'';
       };
-      apiCAEncoded = mkOption {
+      apiCACert = mkOption {
         default = "";
         type = types.str;
-        description = ''API server CA certificate encoded.'';
+        description = ''API server CA certificate.'';
       };
       clusterName = mkOption {
         default = "k8s";
@@ -60,7 +60,7 @@ with lib;
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority-data: ${kubeControllerManagerCfg.apiCAEncoded}
+    certificate-authority-data: ${b64.toBase64 kubeControllerManagerCfg.apiCACert}
     server: ${kubeControllerManagerCfg.apiServerURL}
   name: ${kubeControllerManagerCfg.clusterName}
 contexts:
@@ -74,8 +74,8 @@ preferences: {}
 users:
 - name: "system:kube-controller-manager"
   user:
-    client-certificate-data: b64.toBase64 ${kubeControllerManagerCfg.controllerManagerCert}
-    client-key-data: b64.toBase64 ${kubeControllerManagerCfg.controllerManagerKey}
+    client-certificate-data: ${b64.toBase64 kubeControllerManagerCfg.controllerManagerCert}
+    client-key-data: ${b64.toBase64 kubeControllerManagerCfg.controllerManagerKey}
 '';
 	environment.etc."kubernetes/pki/sa.crt".text = kubeControllerManagerCfg.controllerManagerCert;
 	environment.etc."kubernetes/pki/sa.key".text = kubeControllerManagerCfg.controllerManagerKey;
@@ -156,7 +156,7 @@ spec:
         type: File
     - name: pki
       hostPath:
-        path: /etc/kubernetes/pki
+        path: /etc/static/kubernetes/pki
         type: Directory
       '';
   };

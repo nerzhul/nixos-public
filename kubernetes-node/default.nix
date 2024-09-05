@@ -2,6 +2,7 @@
 {
   imports = [
     ./containerd.nix
+	./kubernetes.nix
     ./kubelet.nix
 	./kube_controller_manager.nix
     ./kube_scheduler.nix
