@@ -2,6 +2,7 @@
 let
   kubeControllerManagerCfg = config.services.kubeControllerManager;
   version = "v1.29.5";
+  b64 = import ../util/base64.nix { inherit lib; };
 in
 with lib;
 {
@@ -27,15 +28,15 @@ with lib;
         type = types.str;
         description = ''Bootstrap kubeconfig context name.'';
       };
-      controllerManagerCertEncoded = mkOption {
+      controllerManagerCert = mkOption {
         default = "";
         type = types.str;
-        description = ''Controller Manager client certificate encoded.'';
+        description = ''Controller Manager client certificate.'';
       };
-      controllerManagerKeyEncoded = mkOption {
+      controllerManagerKey = mkOption {
         default = "";
         type = types.str;
-        description = ''Controller Manager client key encoded.'';
+        description = ''Controller Manager client key.'';
       };
 	  clusterCIDR = mkOption {
 		default = "10.55.0.0/16";
@@ -73,10 +74,11 @@ preferences: {}
 users:
 - name: "system:kube-controller-manager"
   user:
-    client-certificate-data: ${kubeControllerManagerCfg.controllerManagerCertEncoded}
-    client-key-data: ${kubeControllerManagerCfg.controllerManagerKeyEncoded}
+    client-certificate-data: b64.toBase64 ${kubeControllerManagerCfg.controllerManagerCert}
+    client-key-data: b64.toBase64 ${kubeControllerManagerCfg.controllerManagerKey}
 '';
-
+	environment.etc."kubernetes/pki/sa.crt".text = kubeControllerManagerCfg.controllerManagerCert;
+	environment.etc."kubernetes/pki/sa.key".text = kubeControllerManagerCfg.controllerManagerKey;
     environment.etc."kubernetes/manifests/kube-controller-manager.yml".text = ''
 ---
 apiVersion: v1
