@@ -3,6 +3,7 @@
   imports = [
     ./containerd.nix
     ./kubelet.nix
+	./kube_controller_manager.nix
     ./kube_scheduler.nix
   ];
 
