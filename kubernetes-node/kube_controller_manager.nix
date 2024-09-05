@@ -161,7 +161,7 @@ spec:
       hostPath:
         path: /etc/static/kubernetes/pki
         type: Directory
-      '';
+    # Horrible hack to remove in the future
     - name: nixstore
       hostPath:
         path: /nix/store
