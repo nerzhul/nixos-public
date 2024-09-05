@@ -121,7 +121,7 @@ spec:
         - --allocate-node-cidrs=true
         - --cluster-signing-duration=${kubeControllerManagerCfg.clusterSigningDuration}
         - --logging-format=json
-        - --v=${kubeControllerManagerCfg.verbosity}
+        - --v=${builtins.toString kubeControllerManagerCfg.verbosity}
         - --feature-gates=
       ports:
         - name: https
