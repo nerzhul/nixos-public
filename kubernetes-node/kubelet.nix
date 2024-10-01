@@ -4,16 +4,15 @@ let
   kubeletCfg = config.services.kubelet;
   kubernetes = with pkgs; buildGoModule rec {
     pname = "kubernetes";
-    version = "1.29.8";
+    version = "1.29.9";
 
     # Generate hash like this
-    # nix-prefetch-url --unpack nix-prefetch-url --unpack https://github.com/kubernetes/kubernetes/archive/v1.29.8.zip
-    # nix hash to-sri --type sha256 <first hash>
+    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/kubernetes/kubernetes/archive/v1.29.9.zip)
     src = fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
-      hash = "sha256-NnkUsqXz/H25kQz2m7C//gNVXvHNpjnUy7JY52ou1zk=";
+      hash = "sha256-XLtNITqeVallN7vhZxvgjJsuWHYi0vm2ru9OaahU+nM=";
     };
 
     vendorHash = null;
