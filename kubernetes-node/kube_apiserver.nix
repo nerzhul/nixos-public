@@ -88,6 +88,16 @@ with lib;
 		type = types.str;
 		description = ''Front proxy CA certificate.'';
 	  };
+	  apiserverKubeletClientCert = mkOption {
+		default = "";
+		type = types.str;
+		description = ''Kube-apiserver kubelet client certificate.'';
+	  };
+	  apiserverKubeletClientKey = mkOption {
+		default = "";
+		type = types.str;
+		description = ''Kube-apiserver kubelet client key.'';
+	  };
 	  admissionPlugins = mkOption {
 		default = ["DefaultStorageClass" "DefaultTolerationSeconds" "LimitRanger" "NamespaceLifecycle" "PodNodeSelector" "PodSecurity" "ResourceQuota" "ServiceAccount"];
 		type = types.listOf types.str;
@@ -106,16 +116,18 @@ with lib;
     };
   };
   config = mkIf kubeApiServerCfg.enable {
-	environment.etc."kubernetes/pki/etcd.key".text = kubeApiServerCfg.etcdKey; # TODO
-	environment.etc."kubernetes/pki/etcd.crt".text = kubeApiServerCfg.etcdCert; # TODO
-	environment.etc."kubernetes/pki/etcd-ca.crt".text = kubeApiServerCfg.etcdCACert; # TODO
-	environment.etc."kubernetes/pki/kube-apiserver.key".text = kubeApiServerCfg.apiserverKey; # TODO
-	environment.etc."kubernetes/pki/kube-apiserver.crt".text = kubeApiServerCfg.apiserverCert; # TODO
-	environment.etc."kubernetes/pki/ca.crt".text = kubeApiServerCfg.caCert; # TODO
-	environment.etc."kubernetes/pki/front-proxy-client.key".text = kubeApiServerCfg.frontProxyClientKey; # TODO
-	environment.etc."kubernetes/pki/front-proxy-client.crt".text = kubeApiServerCfg.frontProxyClientCert; # TODO
-	environment.etc."kubernetes/pki/front-proxy-ca.crt".text = kubeApiServerCfg.frontProxyCACert; # TODO
+	environment.etc."kubernetes/pki/etcd.key".text = kubeApiServerCfg.etcdKey;
+	environment.etc."kubernetes/pki/etcd.crt".text = kubeApiServerCfg.etcdCert;
+	environment.etc."kubernetes/pki/etcd-ca.crt".text = kubeApiServerCfg.etcdCACert;
+	environment.etc."kubernetes/pki/kube-apiserver.key".text = kubeApiServerCfg.apiserverKey;
+	environment.etc."kubernetes/pki/kube-apiserver.crt".text = kubeApiServerCfg.apiserverCert;
+	environment.etc."kubernetes/pki/ca.crt".text = kubeApiServerCfg.caCert;
+	environment.etc."kubernetes/pki/front-proxy-client.key".text = kubeApiServerCfg.frontProxyClientKey;
+	environment.etc."kubernetes/pki/front-proxy-client.crt".text = kubeApiServerCfg.frontProxyClientCert;
+	environment.etc."kubernetes/pki/front-proxy-ca.crt".text = kubeApiServerCfg.frontProxyCACert;
 	environment.etc."kubernetes/pki/sa.key".text = kubeApiServerCfg.apiserverSAKey;
+	environment.etc."kubernetes/pki/apiserver-kubelet-client.crt".text = kubeApiServerCfg.apiserverKubeletClientCert;
+	environment.etc."kubernetes/pki/apiserver-kubelet-client.key".text = kubeApiServerCfg.apiserverKubeletClientKey;
     environment.etc."kubernetes/manifests/kube-apiserver.yml".text = ''
 ---
 apiVersion: v1
@@ -150,7 +162,7 @@ spec:
         - --service-account-issuer=${kubeApiServerCfg.serviceAccountIssuer}
         - --service-account-signing-key-file=/etc/kubernetes/pki/sa.key
         - --service-cluster-ip-range=${kubeApiServerCfg.serviceClusterIPRange}
-        - --service-node-port-range=${kubeApiServerCfg.nodePortStart}-${kubeApiServerCfg.nodePortEnd}
+        - --service-node-port-range=${toString kubeApiServerCfg.nodePortStart}-${toString kubeApiServerCfg.nodePortEnd}
         - --tls-cert-file=/etc/kubernetes/pki/kube-apiserver.crt
         - --tls-private-key-file=/etc/kubernetes/pki/kube-apiserver.key
         - --enable-bootstrap-token-auth=true
@@ -172,6 +184,9 @@ spec:
       volumeMounts:
         - name: pki
           mountPath: /etc/kubernetes/pki
+        - name: nixstore
+          mountPath: /nix/store
+          readOnly: true
       livenessProbe:
         httpGet:
           path: /livez
