@@ -2,9 +2,10 @@
 {
   imports = [
     ./containerd.nix
-	./kubernetes.nix
+    ./kubernetes.nix
     ./kubelet.nix
-	./kube_controller_manager.nix
+    ./kube_apiserver.nix
+    ./kube_controller_manager.nix
     ./kube_scheduler.nix
   ];
 

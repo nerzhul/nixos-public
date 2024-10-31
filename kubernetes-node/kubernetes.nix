@@ -20,6 +20,6 @@ with lib;
   };
   config = {
     environment.etc."kubernetes/pki/ca.crt".text = kubernetesCfg.apiCACert;
-	environment.etc."kubernetes/pki/ca.key".text = kubernetesCfg.apiCAKey;
+    environment.etc."kubernetes/pki/ca.key".text = kubernetesCfg.apiCAKey;
   };
 }
