@@ -6,13 +6,12 @@ let
     version = "1.7.22";
 
     # Generate hash like this
-    # nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v1.7.22.zip
-    # nix hash to-sri --type sha256 <first hash>
+    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v1.7.23.zip)
     src = fetchFromGitHub {
       owner = "containerd";
       repo = "containerd";
       rev = "v${version}";
-      hash = "sha256-8IHBKai4PvvTuHPDTgx9wFEBzz4MM7Mwo8Q/bzFRzfk=";
+      hash = "sha256-vuOefU1cZr1pKCYHKyDBx/ohghgPlXhK3a38PQKH0pc=";
     };
 
     vendorHash = null;

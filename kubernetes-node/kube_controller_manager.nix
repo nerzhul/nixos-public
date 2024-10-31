@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   kubeControllerManagerCfg = config.services.kubeControllerManager;
-  version = "v1.29.9";
+  version = "v1.29.10";
   b64 = import ../util/base64.nix { inherit lib; };
 in
 with lib;
