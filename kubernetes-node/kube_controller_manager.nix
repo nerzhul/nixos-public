@@ -97,6 +97,7 @@ metadata:
     component: kube-controller-manager
     provider: kubernetes
 spec:
+  dnsPolicy: Default
   hostNetwork: true
   containers:
     - name: controller-manager

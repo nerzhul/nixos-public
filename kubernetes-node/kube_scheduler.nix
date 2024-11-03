@@ -86,6 +86,7 @@ metadata:
     component: kube-scheduler
     provider: kubernetes
 spec:
+  dnsPolicy: Default
   hostNetwork: true
   containers:
     - name: scheduler

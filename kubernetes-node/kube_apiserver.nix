@@ -139,6 +139,7 @@ metadata:
     app: kube-apiserver
 spec:
   hostNetwork: true
+  dnsPolicy: Default
   containers:
     - name: apiserver
       image: registry.k8s.io/kube-apiserver:${version}
