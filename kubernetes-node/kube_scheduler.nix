@@ -88,6 +88,7 @@ metadata:
 spec:
   dnsPolicy: Default
   hostNetwork: true
+  priorityClassName: system-cluster-critical
   containers:
     - name: scheduler
       image: registry.k8s.io/kube-scheduler:${version}
@@ -101,6 +102,12 @@ spec:
         - name: https
           containerPort: 10259
           protocol: TCP
+      resources:
+        requests:
+          cpu: 50m
+          memory: 96Mi
+        limits:
+          memory: 96Mi
       volumeMounts:
         - name: config
           mountPath: /etc/kubernetes/scheduler.yaml

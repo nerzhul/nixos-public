@@ -140,6 +140,7 @@ metadata:
 spec:
   hostNetwork: true
   dnsPolicy: Default
+  priorityClassName: system-cluster-critical
   containers:
     - name: apiserver
       image: registry.k8s.io/kube-apiserver:${version}
@@ -197,6 +198,12 @@ spec:
         timeoutSeconds: 5
         successThreshold: 1
         failureThreshold: 3
+      resources:
+        requests:
+          cpu: 100m
+          memory: 768Mi
+        limits:
+          memory: 768Mi
       readinessProbe:
         httpGet:
           path: /readyz

@@ -9,6 +9,7 @@ pkgs.mkShell {
   packages = [
     # For nix-prefetch-url
     pkgs.nix
+    pkgs.nixpkgs-fmt
   ];
   shellHook = ''
   '';

@@ -39,14 +39,14 @@ with lib;
         description = ''Controller Manager client key.'';
       };
 	  clusterCIDR = mkOption {
-		default = "10.55.0.0/16";
-		type = types.str;
-		description = ''Cluster CIDR.'';
+		  default = "10.55.0.0/16";
+		  type = types.str;
+		  description = ''Cluster CIDR.'';
 	  };
 	  serviceClusterIPRange = mkOption {
-		default = "10.56.0.0/16";
-		type = types.str;
-		description = ''Service Cluster IP Range.'';
+		  default = "10.56.0.0/16";
+		  type = types.str;
+		  description = ''Service Cluster IP Range.'';
 	  };
 	  clusterSigningDuration = mkOption {
 		default = "8760h0m0s";
@@ -99,6 +99,7 @@ metadata:
 spec:
   dnsPolicy: Default
   hostNetwork: true
+  priorityClassName: system-cluster-critical
   containers:
     - name: controller-manager
       image: registry.k8s.io/kube-controller-manager:${version}
@@ -128,6 +129,12 @@ spec:
         - name: https
           containerPort: 10257
           protocol: TCP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 128Mi
       volumeMounts:
         - name: kubeconfig
           mountPath: /etc/kubernetes/controller-manager.kubeconfig
