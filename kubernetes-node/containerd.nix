@@ -3,7 +3,7 @@ let
   cfg = config.services.containerd;
   containerd = with pkgs; buildGoModule rec {
     pname = "containerd";
-    version = "1.7.23";
+    version = "2.0.0";
 
     # Generate hash like this
     # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v2.0.0.zip)
