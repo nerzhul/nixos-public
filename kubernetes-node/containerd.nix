@@ -6,12 +6,12 @@ let
     version = "1.7.23";
 
     # Generate hash like this
-    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v1.7.23.zip)
+    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v2.0.0.zip)
     src = fetchFromGitHub {
       owner = "containerd";
       repo = "containerd";
       rev = "v${version}";
-      hash = "sha256-vuOefU1cZr1pKCYHKyDBx/ohghgPlXhK3a38PQKH0pc=";
+      hash = "sha256-DFAP+zjBYP2SpyD8KXGvI3i/PUZ6d4jdzGyFfr1lzj4=";
     };
 
     vendorHash = null;
@@ -113,7 +113,6 @@ version = 2
     cdi_spec_dirs = ["/etc/cdi", "/var/run/cdi"]
     device_ownership_from_security_context = false
     disable_apparmor = false
-    disable_cgroup = false
     disable_hugetlb_controller = true
     disable_proc_mount = false
     disable_tcp_service = true
@@ -263,13 +262,6 @@ version = 2
     plugin_request_timeout = "2s"
     socket_path = "/var/run/nri/nri.sock"
 
-  [plugins."io.containerd.runtime.v1.linux"]
-    no_shim = false
-    runtime = "runc"
-    runtime_root = ""
-    shim = "containerd-shim"
-    shim_debug = false
-
   [plugins."io.containerd.runtime.v2.task"]
     platforms = ["linux/amd64"]
     sched_core = false
@@ -280,9 +272,6 @@ version = 2
   [plugins."io.containerd.service.v1.tasks-service"]
     blockio_config_file = ""
     rdt_config_file = ""
-
-  [plugins."io.containerd.snapshotter.v1.aufs"]
-    root_path = ""
 
   [plugins."io.containerd.snapshotter.v1.blockfile"]
     fs_type = ""
