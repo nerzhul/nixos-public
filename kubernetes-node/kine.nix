@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
-  kine-uid = 995;
-  kine-gid = 995;
+  kine-uid = 1995;
+  kine-gid = 1995;
   kineCfg = config.services.kine;
 in
 with lib;
@@ -35,7 +35,7 @@ with lib;
       serviceConfig = {
         User = "kine";
         Group = "kine";
-        ExecStart = "${pkgs.kine}/bin/kine --endpoint sqlite3:///var/lib/kine/kine.db --listen-address=0.0.0.0:2379";
+        ExecStart = "${pkgs.kine}/bin/kine --endpoint sqlite:///var/lib/kine/kine.db --listen-address=0.0.0.0:2379";
         Restart = "always";
         RestartSec = 5;
       };
