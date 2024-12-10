@@ -35,10 +35,16 @@ with lib;
       serviceConfig = {
         User = "kine";
         Group = "kine";
-        ExecStart = "${pkgs.kine}/bin/kine";
+        ExecStart = "${pkgs.kine}/bin/kine --endpoint sqlite3:///var/lib/kine/kine.db --listen-address=0.0.0.0:2379";
         Restart = "always";
         RestartSec = 5;
       };
     };
+
+    system.activationScripts.var =
+    ''
+    mkdir -p /var/lib/kine
+    chown -R kine:kine /var/lib/kine
+    ''
   };
 }
