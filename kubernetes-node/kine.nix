@@ -4,6 +4,7 @@ let
   kine-gid = 995;
   kineCfg = config.services.kine;
 in
+with lib;
 {
   options = {
     services.kine = {
