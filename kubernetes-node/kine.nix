@@ -41,7 +41,7 @@ with lib;
       };
     };
 
-    system.activationScripts.var =
+    system.activationScripts.makeKineDir =
       ''
         mkdir -p /var/lib/kine
         chown -R kine:kine /var/lib/kine
