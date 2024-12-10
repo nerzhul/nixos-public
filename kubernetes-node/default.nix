@@ -7,6 +7,7 @@
     ./kube_apiserver.nix
     ./kube_controller_manager.nix
     ./kube_scheduler.nix
+    ./kine.nix
   ];
 
   services.containerd.enable = true;
