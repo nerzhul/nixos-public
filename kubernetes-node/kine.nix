@@ -19,7 +19,7 @@ with lib;
   config = mkIf kineCfg.enable {
     users.extraGroups.kine.gid = kine-gid;
     users.extraUsers.kine = {
-      uid = kine;
+      uid = kine-uid;
       isNormalUser = true;
       group = "kine";
     };
