@@ -42,9 +42,9 @@ with lib;
     };
 
     system.activationScripts.var =
-    ''
-    mkdir -p /var/lib/kine
-    chown -R kine:kine /var/lib/kine
-    ''
+      ''
+        mkdir -p /var/lib/kine
+        chown -R kine:kine /var/lib/kine
+      '';
   };
 }
