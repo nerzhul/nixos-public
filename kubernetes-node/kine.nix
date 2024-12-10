@@ -20,6 +20,7 @@ with lib;
     users.extraGroups.kine.gid = kine-gid;
     users.extraUsers.kine = {
       uid = kine-uid;
+      isNormalUser = true;
       group = "kine";
     };
 
