@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
-  kine-uid = 1995;
-  kine-gid = 1995;
+  version = "v0.13.6-amd64";
+  version-postgres = "17.2";
   kineCfg = config.services.kine;
 in
 with lib;
@@ -11,40 +11,134 @@ with lib;
       enable = mkOption {
         default = false;
         type = with types; bool;
-        description = ''Enable kine daemon.'';
+        description = ''Enable kine static pod.'';
+      };
+
+      pgUser = mkOption {
+        default = "kine";
+        type = with types; str;
+        description = ''User for the kine database.'';
+      };
+
+      pgPassword = mkOption {
+        default = "";
+        type = with types; str;
+        description = ''Password for the kine database.'';
+      };
+
+      pgDatabase = mkOption {
+        default = "kine";
+        type = with types; str;
+        description = ''Database name for the kine database.'';
+      };
+
+      pgUid = mkOption {
+        default = 5432;
+        type = with types; int;
+        description = ''UID for the kine PG database.'';
+      };
+
+      pgGid = mkOption {
+        default = 5432;
+        type = with types; int;
+        description = ''GID for the kine PG database.'';
       };
     };
   };
 
   config = mkIf kineCfg.enable {
-    users.extraGroups.kine.gid = kine-gid;
-    users.extraUsers.kine = {
-      uid = kine-uid;
-      isNormalUser = true;
-      group = "kine";
-    };
-
-    systemd.services.kine = {
-      enable = true;
-      description = "kine (kine is not etcd)";
-      wantedBy = [ "multi-user.target" ];
-      documentation = [ "https://github.com/k3s-io/kine" ];
-      after = [ "network.target" ];
-      path = [ pkgs.kine ];
-
-      serviceConfig = {
-        User = "kine";
-        Group = "kine";
-        ExecStart = "${pkgs.kine}/bin/kine --endpoint sqlite:///var/lib/kine/kine.db --listen-address=0.0.0.0:2379";
-        Restart = "always";
-        RestartSec = 5;
-      };
-    };
-
     system.activationScripts.makeKineDir =
       ''
         mkdir -p /var/lib/kine
-        chown -R kine:kine /var/lib/kine
+        chown -R ${toString kineCfg.pgUid}:${toString kineCfg.pgGid} /var/lib/kine
       '';
+
+    environment.etc."kubernetes/manifests/kine-etcd.yml".text = ''
+      ---
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: kine-etcd
+        namespace: kube-system
+        annotations:
+          app: kine
+      spec:
+        hostNetwork: true
+        dnsPolicy: Default
+        priorityClassName: system-cluster-critical
+        containers:
+          - name: kine
+            image: docker.io/rancher/kine:${version}
+            command:
+              - kine
+              - "-endpoint=postgres://${kineCfg.pgUser}:${kineCfg.pgPassword}@localhost:5432/${kineCfg.pgDatabase}"
+              - "-listen-address=0.0.0.0:2379"
+            ports:
+              - name: https
+                containerPort: 2379
+                protocol: TCP
+              - name: metrics
+                containerPort: 8080
+                protocol: TCP
+            livenessProbe:
+              httpGet:
+                path: /metrics
+                port: metrics
+                scheme: HTTP
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 2379
+              runAsGroup: 2379
+            readinessProbe:
+              httpGet:
+                path: /metrics
+                port: metrics
+                scheme: HTTP
+              initialDelaySeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+          - name: postgres
+            image: docker.io/postgres:${version-postgres}
+            env:
+              - name: POSTGRES_USER
+                value: ${kineCfg.pgUser}
+              - name: POSTGRES_PASSWORD
+                value: ${kineCfg.pgPassword}
+              - name: POSTGRES_DB
+                value: ${kineCfg.pgDatabase}
+            ports:
+              - name: postgres
+                containerPort: 5432
+                protocol: TCP
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: ${toString kineCfg.pgUid}
+              runAsGroup: ${toString kineCfg.pgGid}
+            volumeMounts:
+              - name: kine-data
+                mountPath: /var/lib/postgresql/data
+        volumes:
+          - name: kine-data
+            hostPath:
+              path: /var/lib/kine
+              type: Directory
+    '';
   };
 }

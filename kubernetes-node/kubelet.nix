@@ -133,7 +133,7 @@ with lib;
 
     environment.systemPackages = [ pkgs.nfs-utils ];
 
-    system.activationScripts.makeKineDir =
+    system.activationScripts.makeKubeletManifestsDir =
       ''
         mkdir -p /etc/kubernetes/manifests
       '';
