@@ -14,6 +14,28 @@ with lib;
         description = ''Enable kine static pod.'';
       };
 
+      kineUid = mkOption {
+        default = 2379;
+        type = with types; int;
+        description = ''UID for the kine container.'';
+      };
+
+      kineGid = mkOption {
+        default = 2379;
+        type = with types; int;
+        description = ''GID for the kine container.'';
+      };
+
+      kineEtcdKey = mkOption {
+        type = types.str;
+        description = ''Kine ETCD key.'';
+      };
+
+      kineEtcdCert = mkOption {
+        type = types.str;
+        description = ''Kine ETCD certificate.'';
+      };
+
       pgUser = mkOption {
         default = "kine";
         type = with types; str;
@@ -49,9 +71,13 @@ with lib;
   config = mkIf kineCfg.enable {
     system.activationScripts.makeKineDir =
       ''
-        mkdir -p /var/lib/kine
+        mkdir -p /var/lib/kine /etc/kine
         chown -R ${toString kineCfg.pgUid}:${toString kineCfg.pgGid} /var/lib/kine
+        chown -R ${toString kineCfg.kineUid}:${toString kineCfg.kineGid} /etc/kine
       '';
+
+    environment.etc."kine/etcd.crt".text = kineCfg.kineEtcdCert;
+    environment.etc."kine/etcd.key".text = kineCfg.kineEtcdKey;
 
     environment.etc."kubernetes/manifests/kine-etcd.yml".text = ''
       ---
@@ -71,8 +97,10 @@ with lib;
             image: docker.io/rancher/kine:${version}
             command:
               - kine
-              - "-endpoint=postgres://${kineCfg.pgUser}:${kineCfg.pgPassword}@localhost:5432/${kineCfg.pgDatabase}"
+              - "-endpoint=postgres://${kineCfg.pgUser}:${kineCfg.pgPassword}@localhost:5432/${kineCfg.pgDatabase}?sslmode=disable"
               - "-listen-address=0.0.0.0:2379"
+              - "-server-cert-file=/etc/kine/etcd.crt"
+              - "-server-key-file=/etc/kine/etcd.key"
             ports:
               - name: https
                 containerPort: 2379
@@ -84,7 +112,7 @@ with lib;
               httpGet:
                 path: /metrics
                 port: metrics
-                scheme: HTTP
+                scheme: HTTPS
               initialDelaySeconds: 5
               timeoutSeconds: 5
               successThreshold: 1
@@ -97,17 +125,24 @@ with lib;
                 memory: 128Mi
             securityContext:
               runAsNonRoot: true
-              runAsUser: 2379
-              runAsGroup: 2379
+              runAsUser: ${toString kineCfg.kineUid}
+              runAsGroup: ${toString kineCfg.kineGid}
             readinessProbe:
               httpGet:
                 path: /metrics
                 port: metrics
-                scheme: HTTP
+                scheme: HTTPS
               initialDelaySeconds: 5
               timeoutSeconds: 5
               successThreshold: 1
               failureThreshold: 3
+            volumeMounts:
+              - name: kine-config
+                mountPath: /etc/kine
+                readOnly: true
+              - name: nixstore
+                mountPath: /nix/store
+                readOnly: true
           - name: postgres
             image: docker.io/postgres:${version-postgres}
             env:
@@ -138,6 +173,15 @@ with lib;
           - name: kine-data
             hostPath:
               path: /var/lib/kine
+              type: Directory
+          - name: kine-config
+            hostPath:
+              path: /etc/static/kine
+              type: Directory
+          # Horrible hack to remove in the future
+          - name: nixstore
+            hostPath:
+              path: /nix/store
               type: Directory
     '';
   };
