@@ -2,9 +2,9 @@
 let
   b64 = import ../util/base64.nix { inherit lib; };
   kubeletCfg = config.services.kubelet;
-  kubernetes = with pkgs; buildGoModule rec {
+  kubernetes = with pkgs; buildGo122Module rec {
     pname = "kubernetes";
-    version = "1.29.10";
+    version = "1.31.4";
 
     # Generate hash like this
     # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/kubernetes/kubernetes/archive/v1.29.10.zip)
@@ -12,7 +12,7 @@ let
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
-      hash = "sha256-28cgqn/PRWJyb5uRKW/moX0kCDzEPAxc+YAkZBq/j2U=";
+      hash = "sha256-XEilva/K2xGZHhrifaK/f4a3PGPb5dClOqv1dlJOTCM=";
     };
 
     vendorHash = null;

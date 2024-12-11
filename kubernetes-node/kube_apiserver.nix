@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   kubeApiServerCfg = config.services.kubeApiServer;
-  version = "v1.29.10";
+  version = "v1.31.4";
 in
 with lib;
 {

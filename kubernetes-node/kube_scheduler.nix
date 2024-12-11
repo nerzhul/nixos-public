@@ -2,7 +2,7 @@
 let
   b64 = import ../util/base64.nix { inherit lib; };
   kubeSchedulerCfg = config.services.kubeScheduler;
-  version = "v1.29.10";
+  version = "v1.31.4";
 in
 with lib;
 {
