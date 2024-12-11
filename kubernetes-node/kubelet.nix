@@ -133,6 +133,11 @@ with lib;
 
     environment.systemPackages = [ pkgs.nfs-utils ];
 
+    system.activationScripts.makeKineDir =
+      ''
+        mkdir -p /etc/kubernetes/manifests
+      '';
+
     # Disable firewall
     networking.firewall.enable = false;
     environment.etc."kubernetes/kubelet.yml".text = ''
