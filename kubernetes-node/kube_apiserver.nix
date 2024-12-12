@@ -120,7 +120,6 @@ with lib;
     environment.etc."kubernetes/pki/etcd-ca.crt".text = kubeApiServerCfg.etcdCACert;
     environment.etc."kubernetes/pki/kube-apiserver.key".text = kubeApiServerCfg.apiserverKey;
     environment.etc."kubernetes/pki/kube-apiserver.crt".text = kubeApiServerCfg.apiserverCert;
-    environment.etc."kubernetes/pki/ca.crt".text = kubeApiServerCfg.caCert;
     environment.etc."kubernetes/pki/front-proxy-client.key".text = kubeApiServerCfg.frontProxyClientKey;
     environment.etc."kubernetes/pki/front-proxy-client.crt".text = kubeApiServerCfg.frontProxyClientCert;
     environment.etc."kubernetes/pki/front-proxy-ca.crt".text = kubeApiServerCfg.frontProxyCACert;
