@@ -199,9 +199,9 @@ with lib;
             resources:
               requests:
                 cpu: 100m
-                memory: 768Mi
+                memory: 1Gi
               limits:
-                memory: 768Mi
+                memory: 1Gi
             readinessProbe:
               httpGet:
                 path: /readyz
