@@ -127,13 +127,10 @@ version = 2
     enable_unprivileged_icmp = false
     enable_unprivileged_ports = false
     ignore_image_defined_volumes = false
-    max_concurrent_downloads = 3
     max_container_log_line_size = 16384
     netns_mounts_under_state_dir = false
     restrict_oom_score_adj = false
-    sandbox_image = "registry.k8s.io/pause:3.8"
     selinux_category_range = 1024
-    stats_collect_period = 10
     stream_idle_timeout = "4h0m0s"
     stream_server_address = "127.0.0.1"
     systemd_cgroup = false
@@ -150,7 +147,6 @@ version = 2
 
     [plugins."io.containerd.grpc.v1.cri".containerd]
       default_runtime_name = "runc"
-      disable_snapshot_annotations = true
       discard_unpacked_layers = false
       ignore_blockio_not_enabled_errors = false
       ignore_rdt_not_enabled_errors = false
@@ -234,10 +230,6 @@ version = 2
       [plugins."io.containerd.grpc.v1.cri".registry.headers]
 
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-
-    [plugins."io.containerd.grpc.v1.cri".x509_key_pair_streaming]
-      tls_cert_file = ""
-      tls_key_file = ""
 
   [plugins."io.containerd.internal.v1.opt"]
     path = "/opt/containerd"
@@ -344,6 +336,7 @@ version = 2
   address = ""
   gid = 0
   uid = 0
+
 ${if cfg.nvidiaEnable then ''
 accept-nvidia-visible-devices-as-volume-mounts = false
 accept-nvidia-visible-devices-envvar-when-unprivileged = true
@@ -360,7 +353,7 @@ supported-driver-capabilities = "compat32,compute,display,graphics,ngx,utility,v
 [nvidia-container-runtime]
   log-level = "info"
   mode = "auto"
-  runtimes = ["docker-runc", "runc", "crun"]
+  runtimes = ["runc", "crun"]
 
   [nvidia-container-runtime.modes]
 
@@ -393,7 +386,7 @@ supported-driver-capabilities = "compat32,compute,display,graphics,ngx,utility,v
       wantedBy = [ "multi-user.target" ];
       documentation = [ "https://containerd.io" ];
       after = [ "network.target" ];
-      path = [ pkgs.runc ];
+      path = [ pkgs.runc pkgs.nvidia-container-toolkit ];
 
       serviceConfig = {
         ExecStartPre = "${pkgs.kmod}/bin/modprobe overlay";
