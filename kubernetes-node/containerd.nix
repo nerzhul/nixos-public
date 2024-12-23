@@ -60,6 +60,12 @@ with lib;
         type = with types; bool;
         description = ''Starts containerd daemon.'';
       };
+
+      nvidiaEnable = mkOption {
+        default = false;
+        type = with types; bool;
+        description = ''Enable nvidia runtime support.'';
+      };
     };
   };
   config = mkIf cfg.enable {
@@ -338,6 +344,41 @@ version = 2
   address = ""
   gid = 0
   uid = 0
+${if cfg.nvidiaEnable then ''
+accept-nvidia-visible-devices-as-volume-mounts = false
+accept-nvidia-visible-devices-envvar-when-unprivileged = true
+disable-require = false
+supported-driver-capabilities = "compat32,compute,display,graphics,ngx,utility,video"
+
+[nvidia-container-cli]
+  environment = []
+  ldconfig = "@/sbin/ldconfig.real"
+  load-kmods = true
+  path = "/usr/local/nvidia/toolkit/nvidia-container-cli"
+  root = "/"
+
+[nvidia-container-runtime]
+  log-level = "info"
+  mode = "auto"
+  runtimes = ["docker-runc", "runc", "crun"]
+
+  [nvidia-container-runtime.modes]
+
+    [nvidia-container-runtime.modes.cdi]
+      annotation-prefixes = ["cdi.k8s.io/"]
+      default-kind = "management.nvidia.com/gpu"
+      spec-dirs = ["/etc/cdi", "/var/run/cdi"]
+
+    [nvidia-container-runtime.modes.csv]
+      mount-spec-path = "/etc/nvidia-container-runtime/host-files-for-container.d"
+
+[nvidia-container-runtime-hook]
+  path = "/usr/local/nvidia/toolkit/nvidia-container-runtime-hook"
+  skip-mode-detection = true
+
+[nvidia-ctk]
+  path = "/usr/local/nvidia/toolkit/nvidia-ctk"
+'' else ""}
 '';
 
     boot.kernel = {
