@@ -371,6 +371,14 @@ supported-driver-capabilities = "compat32,compute,display,graphics,ngx,utility,v
 
 [nvidia-ctk]
   path = "/usr/local/nvidia/toolkit/nvidia-ctk"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+  privileged_without_host_devices = false
+  runtime_engine = ""
+  runtime_root = ""
+  runtime_type = "io.containerd.runc.v2"
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+    BinaryName = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime"
 '' else ""}
 '';
 
