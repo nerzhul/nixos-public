@@ -239,9 +239,8 @@ with lib;
               path: /nix/store
               type: Directory
     '';
-  }
-  // mkIf kubeApiServerCfg.audit.enable {
+  } // (mkIf kubeApiServerCfg.audit.enable {
       environment.etc."kubernetes/audit-policy.yaml".text = kubeApiServerCfg.audit.policy;
       environment.etc."kubernetes/audit-webhook.kubeconfig".text = kubeApiServerCfg.audit.webhook;
-  };
+  });
 }
