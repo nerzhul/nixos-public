@@ -12,6 +12,23 @@ with lib;
         type = with types; bool;
         description = ''Enable kube-apiserver static pod.'';
       };
+      audit = {
+        enable = mkOption {
+          default = false;
+          type = with types; bool;
+          description = ''Enable audit logging.'';
+        };
+        policy = mkOption {
+          default = "";
+          type = types.str;
+          description = ''Audit policy.'';
+        };
+        webhook = mkOption {
+          default = "";
+          type = types.str;
+          description = ''Audit webhook kubeconfig.'';
+        };
+      };
       etcdServers = mkOption {
         default = "https://etcd:2379";
         type = types.str;
@@ -222,5 +239,9 @@ with lib;
               path: /nix/store
               type: Directory
     '';
+  }
+  // mkIf kubeApiServerCfg.audit.enable {
+      environment.etc."kubernetes/audit-policy.yaml".text = kubeApiServerCfg.audit.policy;
+      environment.etc."kubernetes/audit-webhook.kubeconfig".text = kubeApiServerCfg.audit.webhook;
   };
 }
