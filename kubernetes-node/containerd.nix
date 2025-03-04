@@ -3,7 +3,7 @@ let
   cfg = config.services.containerd;
   containerd = with pkgs; buildGoModule rec {
     pname = "containerd";
-    version = "2.0.2";
+    version = "2.0.3";
 
     # Generate hash like this
     # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v2.0.2.zip)
@@ -11,7 +11,7 @@ let
       owner = "containerd";
       repo = "containerd";
       rev = "v${version}";
-      hash = "sha256-aCC6nH+bxjk6dUIzUva4ILH0FD6QkWiJmdrcMLA18Jw=";
+      hash = "sha256-MPzC7X4r3zrDM6Ej8lICDIB29X+s6jQ1sHQmnk9Zc10=";
     };
 
     vendorHash = null;
