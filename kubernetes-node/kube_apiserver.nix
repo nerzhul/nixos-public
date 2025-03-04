@@ -12,6 +12,18 @@ with lib;
         type = with types; bool;
         description = ''Enable kube-apiserver static pod.'';
       };
+      dns = {
+        policy = mkOption {
+          default = "Default";
+          type = types.str;
+          description = ''DNS policy.'';
+        };
+        nameservers = mkOption {
+          default = ["::1" "127.0.0.1"];
+          type = types.listOf types.str;
+          description = ''DNS nameservers.'';
+        };
+      };
       audit = {
         enable = mkOption {
           default = false;
@@ -154,7 +166,12 @@ with lib;
           app: kube-apiserver
       spec:
         hostNetwork: true
-        dnsPolicy: Default
+        dnsPolicy: ${kubeApiServerCfg.dns.policy}
+        dnsConfig:
+          options:
+            - name: ndots
+              value: "0"
+          nameservers: ${builtins.toJSON kubeApiServerCfg.dns.nameservers}
         priorityClassName: system-cluster-critical
         containers:
           - name: apiserver
