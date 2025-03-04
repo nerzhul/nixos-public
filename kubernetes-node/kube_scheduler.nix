@@ -13,6 +13,18 @@ with lib;
         type = with types; bool;
         description = ''Enable kube-scheduler static pod.'';
       };
+      dns = {
+        policy = mkOption {
+          default = "Default";
+          type = types.str;
+          description = ''DNS policy.'';
+        };
+        nameservers = mkOption {
+          default = ["::1" "127.0.0.1"];
+          type = types.listOf types.str;
+          description = ''DNS nameservers.'';
+        };
+      };
       apiServerURL = mkOption {
         default = "https://localhost:6443";
         type = types.str;
@@ -86,7 +98,12 @@ metadata:
     component: kube-scheduler
     provider: kubernetes
 spec:
-  dnsPolicy: Default
+  dnsPolicy: ${kubeSchedulerCfg.dns.policy}
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "0"
+    nameservers: ${builtins.toJSON kubeSchedulerCfg.dns.nameservers}
   hostNetwork: true
   priorityClassName: system-cluster-critical
   containers:

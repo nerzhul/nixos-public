@@ -13,6 +13,18 @@ with lib;
         type = with types; bool;
         description = ''Enable kube-controller-manager static pod.'';
       };
+      dns = {
+        policy = mkOption {
+          default = "Default";
+          type = types.str;
+          description = ''DNS policy.'';
+        };
+        nameservers = mkOption {
+          default = ["::1" "127.0.0.1"];
+          type = types.listOf types.str;
+          description = ''DNS nameservers.'';
+        };
+      };
       apiServerURL = mkOption {
         default = "https://localhost:6443";
         type = types.str;
@@ -97,7 +109,12 @@ metadata:
     component: kube-controller-manager
     provider: kubernetes
 spec:
-  dnsPolicy: Default
+  dnsPolicy: ${kubeControllerManagerCfg.dns.policy}
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "0"
+    nameservers: ${builtins.toJSON kubeControllerManagerCfg.dns.nameservers}
   hostNetwork: true
   priorityClassName: system-cluster-critical
   containers:
