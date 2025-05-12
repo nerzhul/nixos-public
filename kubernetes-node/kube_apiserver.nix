@@ -91,6 +91,16 @@ with lib;
         type = types.str;
         description = ''Kube-apiserver key.'';
       };
+      apiServerDomainName = mkOption {
+        default = "kubernetes.k8s.local";
+        type = types.str;
+        description = ''Kube-apiserver domain name.'';
+      };
+      apiServerIP = mkOption {
+        default = "127.0.0.1";
+        type = types.str;
+        description = ''Kube-apiserver IP address.'';
+      };
       apiserverCert = mkOption {
         default = "";
         type = types.str;
@@ -148,6 +158,23 @@ with lib;
     environment.etc."kubernetes/pki/etcd.crt".text = kubeApiServerCfg.etcdCert;
     environment.etc."kubernetes/pki/etcd-ca.crt".text = kubeApiServerCfg.etcdCACert;
     environment.etc."kubernetes/pki/kube-apiserver.key".text = kubeApiServerCfg.apiserverKey;
+    environment.etc."kubernetes/pki/kube-apiserver-csr.conf".text = ''
+      [req]
+      req_extensions = v3_req
+      distinguished_name = req_distinguished_name
+      [req_distinguished_name]
+      CN = kube-apiserver
+      [v3_req]
+      keyUsage = digitalSignature, keyEncipherment
+      extendedKeyUsage = serverAuth, clientAuth
+      subjectAltName = @alt_names
+      [alt_names]
+      DNS.1 = kubernetes
+      DNS.2 = kubernetes.default
+      DNS.3 = kubernetes.default.svc
+      DNS.4 = kubernetes.default.svc.cluster.local
+      DNS.5 = ${kubeApiServerCfg.apiServerDomainName}
+      IP.1 = ${kubeApiServerCfg.apiServerIP}'';
     environment.etc."kubernetes/pki/kube-apiserver.crt".text = kubeApiServerCfg.apiserverCert;
     environment.etc."kubernetes/pki/front-proxy-client.key".text = kubeApiServerCfg.frontProxyClientKey;
     environment.etc."kubernetes/pki/front-proxy-client.crt".text = kubeApiServerCfg.frontProxyClientCert;
@@ -173,6 +200,25 @@ with lib;
               value: "0"
           nameservers: ${builtins.toJSON kubeApiServerCfg.dns.nameservers}
         priorityClassName: system-cluster-critical
+        initContainers:
+          - name: pki-init
+            image: alpine/openssl:3.3.3
+            command:
+              - sh
+              - -c
+              - ''
+                openssl req -new -key /etc/kubernetes/pki/kube-apiserver.key -out /tmp/kube-apiserver.csr -config /etc/kubernetes/pki/kube-apiserver-csr.conf
+                openssl x509 -req -in /tmp/kube-apiserver.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
+                  -out /etc/kubernetes/generated/pki/kube-apiserver.crt -days 365 -extensions v3_req -extfile /etc/kubernetes/pki/kube-apiserver-csr.conf
+              ''
+            volumeMounts:
+              - name: pki
+                mountPath: /etc/kubernetes/pki
+              - name: nixstore
+                mountPath: /nix/store
+                readOnly: true
+              - name: generated-pki
+                mountPath: /etc/kubernetes/generated/pki
         containers:
           - name: apiserver
             image: registry.k8s.io/kube-apiserver:${version}
@@ -197,7 +243,7 @@ with lib;
               - --service-account-signing-key-file=/etc/kubernetes/pki/sa.key
               - --service-cluster-ip-range=${kubeApiServerCfg.serviceClusterIPRange}
               - --service-node-port-range=${toString kubeApiServerCfg.nodePortStart}-${toString kubeApiServerCfg.nodePortEnd}
-              - --tls-cert-file=/etc/kubernetes/pki/kube-apiserver.crt
+              - --tls-cert-file=/etc/kubernetes/generated/pki/kube-apiserver.crt
               - --tls-private-key-file=/etc/kubernetes/pki/kube-apiserver.key
               - --enable-bootstrap-token-auth=true
               - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
@@ -220,6 +266,9 @@ with lib;
                 mountPath: /etc/kubernetes/pki
               - name: nixstore
                 mountPath: /nix/store
+                readOnly: true
+              - name: generated-pki
+                mountPath: /etc/kubernetes/generated/pki
                 readOnly: true
             livenessProbe:
               httpGet:
@@ -246,6 +295,8 @@ with lib;
               successThreshold: 1
               failureThreshold: 3
         volumes:
+          - name: generated-pki
+            emptyDir: {}
           - name: pki
             hostPath:
               path: /etc/static/kubernetes/pki
