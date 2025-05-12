@@ -101,11 +101,6 @@ with lib;
         type = types.str;
         description = ''Kube-apiserver IP address.'';
       };
-      apiserverCert = mkOption {
-        default = "";
-        type = types.str;
-        description = ''Kube-apiserver certificate.'';
-      };
       caCert = mkOption {
         default = "";
         type = types.str;
@@ -162,12 +157,16 @@ with lib;
       [req]
       req_extensions = v3_req
       distinguished_name = req_distinguished_name
+      prompt = no
+
       [req_distinguished_name]
       CN = kube-apiserver
+
       [v3_req]
       keyUsage = digitalSignature, keyEncipherment
       extendedKeyUsage = serverAuth, clientAuth
       subjectAltName = @alt_names
+
       [alt_names]
       DNS.1 = kubernetes
       DNS.2 = kubernetes.default
@@ -175,7 +174,6 @@ with lib;
       DNS.4 = kubernetes.default.svc.cluster.local
       DNS.5 = ${kubeApiServerCfg.apiServerDomainName}
       IP.1 = ${kubeApiServerCfg.apiServerIP}'';
-    environment.etc."kubernetes/pki/kube-apiserver.crt".text = kubeApiServerCfg.apiserverCert;
     environment.etc."kubernetes/pki/front-proxy-client.key".text = kubeApiServerCfg.frontProxyClientKey;
     environment.etc."kubernetes/pki/front-proxy-client.crt".text = kubeApiServerCfg.frontProxyClientCert;
     environment.etc."kubernetes/pki/front-proxy-ca.crt".text = kubeApiServerCfg.frontProxyCACert;
@@ -206,11 +204,12 @@ with lib;
             command:
               - sh
               - -c
-              - ''
-                openssl req -new -key /etc/kubernetes/pki/kube-apiserver.key -out /tmp/kube-apiserver.csr -config /etc/kubernetes/pki/kube-apiserver-csr.conf
-                openssl x509 -req -in /tmp/kube-apiserver.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
+              - |
+                openssl req -new -key /etc/kubernetes/pki/kube-apiserver.key -out /etc/kubernetes/generated/pki/kube-apiserver.csr \
+                  -config /etc/kubernetes/pki/kube-apiserver-csr.conf
+                openssl x509 -req -in /etc/kubernetes/generated/pki/kube-apiserver.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
+                  -CAserial /etc/kubernetes/generated/pki/ca.srl \
                   -out /etc/kubernetes/generated/pki/kube-apiserver.crt -days 365 -extensions v3_req -extfile /etc/kubernetes/pki/kube-apiserver-csr.conf
-              ''
             volumeMounts:
               - name: pki
                 mountPath: /etc/kubernetes/pki
