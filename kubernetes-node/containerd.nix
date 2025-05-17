@@ -141,9 +141,9 @@ imports = []
     device_ownership_from_security_context = false
     ignore_image_defined_volumes = false
     netns_mounts_under_state_dir = false
-    enable_unprivileged_ports = false
-    enable_unprivileged_icmp = false
-    enable_cdi = false
+    enable_unprivileged_ports = true
+    enable_unprivileged_icmp = true
+    enable_cdi = true
     cdi_spec_dirs = ['/etc/cdi', '/var/run/cdi']
     drain_exec_sync_io_timeout = '0s'
     ignore_deprecation_warnings = []
@@ -172,15 +172,12 @@ imports = []
           [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]
             BinaryName = ""
             CriuImagePath = ""
-            CriuPath = ""
             CriuWorkPath = ""
             IoGid = 0
             IoUid = 0
             NoNewKeyring = false
-            NoPivotRoot = false
             Root = ""
             ShimCgroup = ""
-            SystemdCgroup = true
 
     [plugins.'io.containerd.cri.v1.runtime'.cni]
       bin_dir = ""
@@ -222,8 +219,6 @@ imports = []
     path = '/opt/containerd'
 
   [plugins.'io.containerd.internal.v1.tracing']
-    service_name = 'containerd'
-    sampling_ratio = 1.0
 
   [plugins.'io.containerd.metadata.v1.bolt']
     content_sharing_policy = 'shared'
@@ -236,7 +231,7 @@ imports = []
     no_prometheus = false
 
   [plugins.'io.containerd.nri.v1.nri']
-    disable = true
+    disable = false
     socket_path = '/var/run/nri/nri.sock'
     plugin_path = '/opt/nri/plugins'
     plugin_config_path = '/etc/nri/conf.d'
@@ -245,7 +240,7 @@ imports = []
     disable_connections = false
 
   [plugins.'io.containerd.runtime.v2.task']
-    platforms = ['linux/amd64']
+    platforms = ['linux/arm64/v8']
 
   [plugins.'io.containerd.service.v1.diff-service']
     default = ['walking']
@@ -297,13 +292,6 @@ imports = []
     max_concurrent_uploaded_layers = 3
     check_platform_supported = false
     config_path = ""
-
-    [[plugins.'io.containerd.transfer.v1.local'.unpack_config]]
-      platform = 'linux/amd64'
-      snapshotter = 'overlayfs'
-      differ = ""
-      config_type = ""
-      layer_types = []
 
 [cgroup]
   path = ""
