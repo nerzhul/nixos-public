@@ -180,7 +180,7 @@ imports = []
             NoPivotRoot = false
             Root = ""
             ShimCgroup = ""
-            SystemdCgroup = false
+            SystemdCgroup = true
 
     [plugins.'io.containerd.cri.v1.runtime'.cni]
       bin_dir = ""
@@ -208,7 +208,6 @@ imports = []
     stream_server_port = '0'
     stream_idle_timeout = '4h0m0s'
     enable_tls_streaming = false
-    systemd_cgroup = true
 
     [plugins.'io.containerd.grpc.v1.cri'.x509_key_pair_streaming]
       tls_cert_file = ""
