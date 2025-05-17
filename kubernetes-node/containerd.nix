@@ -71,123 +71,105 @@ with lib;
   config = mkIf cfg.enable {
     environment.systemPackages = [ containerd ];
 	environment.etc."containerd/config.toml".text = lib.mkForce ''
-disabled_plugins = ["io.containerd.snapshotter.v1.aufs"]
-imports = []
-oom_score = 0
-plugin_dir = ""
-required_plugins = []
-root = "/var/lib/containerd"
-state = "/run/containerd"
+version = 3
+root = '/var/lib/containerd'
+state = '/run/containerd'
 temp = ""
-version = 2
-
-[cgroup]
-  path = ""
-
-[debug]
-  address = ""
-  format = ""
-  gid = 0
-  level = ""
-  uid = 0
+disabled_plugins = ['io.containerd.snapshotter.v1.aufs']
+required_plugins = []
+oom_score = 0
+imports = []
 
 [grpc]
-  address = "/run/containerd/containerd.sock"
-  gid = 0
-  max_recv_message_size = 16777216
-  max_send_message_size = 16777216
+  address = '/run/containerd/containerd.sock'
   tcp_address = ""
   tcp_tls_ca = ""
   tcp_tls_cert = ""
   tcp_tls_key = ""
   uid = 0
+  gid = 0
+  max_recv_message_size = 16777216
+  max_send_message_size = 16777216
+
+[ttrpc]
+  address = ""
+  uid = 0
+  gid = 0
+
+[debug]
+  address = ""
+  uid = 0
+  gid = 0
+  level = ""
+  format = ""
 
 [metrics]
   address = ""
   grpc_histogram = false
 
 [plugins]
+  [plugins.'io.containerd.cri.v1.images']
+    snapshotter = 'overlayfs'
+    disable_snapshot_annotations = true
+    discard_unpacked_layers = false
+    max_concurrent_downloads = 3
+    concurrent_layer_fetch_buffer = 0
+    image_pull_progress_timeout = '5m0s'
+    image_pull_with_sync_fs = false
+    stats_collect_period = 10
+    use_local_image_pull = false
 
-  [plugins."io.containerd.gc.v1.scheduler"]
-    deletion_threshold = 0
-    mutation_threshold = 100
-    pause_threshold = 0.02
-    schedule_delay = "0s"
-    startup_delay = "100ms"
+    [plugins.'io.containerd.cri.v1.images'.pinned_images]
+      sandbox = 'registry.k8s.io/pause:3.10'
 
-  [plugins."io.containerd.grpc.v1.cri"]
-    cdi_spec_dirs = ["/etc/cdi", "/var/run/cdi"]
-    device_ownership_from_security_context = false
-    disable_apparmor = false
-    disable_hugetlb_controller = true
-    disable_proc_mount = false
-    drain_exec_sync_io_timeout = "0s"
-    enable_cdi = false
+    [plugins.'io.containerd.cri.v1.images'.registry]
+      config_path = ""
+
+    [plugins.'io.containerd.cri.v1.images'.image_decryption]
+      key_model = 'node'
+
+  [plugins.'io.containerd.cri.v1.runtime']
     enable_selinux = false
-    enable_unprivileged_icmp = false
-    enable_unprivileged_ports = false
-    ignore_image_defined_volumes = false
-    max_container_log_line_size = 16384
-    netns_mounts_under_state_dir = false
-    restrict_oom_score_adj = false
     selinux_category_range = 1024
-    stream_idle_timeout = "4h0m0s"
-    stream_server_address = "127.0.0.1"
-    systemd_cgroup = false
-    tolerate_missing_hugetlb_controller = true
+    max_container_log_line_size = 16384
+    disable_apparmor = false
+    restrict_oom_score_adj = false
+    disable_proc_mount = false
     unset_seccomp_profile = ""
+    tolerate_missing_hugetlb_controller = true
+    disable_hugetlb_controller = true
+    device_ownership_from_security_context = false
+    ignore_image_defined_volumes = false
+    netns_mounts_under_state_dir = false
+    enable_unprivileged_ports = false
+    enable_unprivileged_icmp = false
+    enable_cdi = false
+    cdi_spec_dirs = ['/etc/cdi', '/var/run/cdi']
+    drain_exec_sync_io_timeout = '0s'
+    ignore_deprecation_warnings = []
 
-    [plugins."io.containerd.grpc.v1.cri".cni]
-      bin_dir = "/opt/cni/bin"
-      conf_dir = "/etc/cni/net.d"
-      conf_template = ""
-      ip_pref = ""
-      max_conf_num = 1
-      setup_serially = false
-
-    [plugins."io.containerd.grpc.v1.cri".containerd]
-      default_runtime_name = "runc"
-      discard_unpacked_layers = false
+    [plugins.'io.containerd.cri.v1.runtime'.containerd]
+      default_runtime_name = 'runc'
       ignore_blockio_not_enabled_errors = false
       ignore_rdt_not_enabled_errors = false
-      no_pivot = false
-      snapshotter = "overlayfs"
 
-      [plugins."io.containerd.grpc.v1.cri".containerd.default_runtime]
-        base_runtime_spec = ""
-        cni_conf_dir = ""
-        cni_max_conf_num = 0
-        container_annotations = []
-        pod_annotations = []
-        privileged_without_host_devices = false
-        privileged_without_host_devices_all_devices_allowed = false
-        runtime_engine = ""
-        runtime_path = ""
-        runtime_root = ""
-        runtime_type = "io.containerd.runc.v2"
-        sandbox_mode = ""
-        snapshotter = ""
-
-        [plugins."io.containerd.grpc.v1.cri".containerd.default_runtime.options]
-
-      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
-
-        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+      [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes]
+        [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc]
+          runtime_type = 'io.containerd.runc.v2'
+          runtime_path = ""
+          pod_annotations = []
+          container_annotations = []
+          privileged_without_host_devices = false
+          privileged_without_host_devices_all_devices_allowed = false
+          cgroup_writable = false
           base_runtime_spec = ""
           cni_conf_dir = ""
           cni_max_conf_num = 0
-          container_annotations = []
-          pod_annotations = []
-          privileged_without_host_devices = false
-          privileged_without_host_devices_all_devices_allowed = false
-          runtime_engine = ""
-          runtime_path = ""
-          runtime_root = ""
-          runtime_type = "io.containerd.runc.v2"
-          sandbox_mode = "podsandbox"
           snapshotter = ""
+          sandboxer = 'podsandbox'
+          io_type = ""
 
-          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+          [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]
             BinaryName = ""
             CriuImagePath = ""
             CriuPath = ""
@@ -200,142 +182,157 @@ version = 2
             ShimCgroup = ""
             SystemdCgroup = false
 
-      [plugins."io.containerd.grpc.v1.cri".containerd.untrusted_workload_runtime]
-        base_runtime_spec = ""
-        cni_conf_dir = ""
-        cni_max_conf_num = 0
-        container_annotations = []
-        pod_annotations = []
-        privileged_without_host_devices = false
-        privileged_without_host_devices_all_devices_allowed = false
-        runtime_engine = ""
-        runtime_path = ""
-        runtime_root = ""
-        runtime_type = ""
-        sandbox_mode = ""
-        snapshotter = ""
+    [plugins.'io.containerd.cri.v1.runtime'.cni]
+      bin_dir = ""
+      bin_dirs = ['/opt/cni/bin']
+      conf_dir = '/etc/cni/net.d'
+      max_conf_num = 1
+      setup_serially = false
+      conf_template = ""
+      ip_pref = ""
+      use_internal_loopback = false
 
-        [plugins."io.containerd.grpc.v1.cri".containerd.untrusted_workload_runtime.options]
+  [plugins.'io.containerd.differ.v1.erofs']
+    mkfs_options = []
 
-    [plugins."io.containerd.grpc.v1.cri".image_decryption]
-      key_model = "node"
+  [plugins.'io.containerd.gc.v1.scheduler']
+    pause_threshold = 0.02
+    deletion_threshold = 0
+    mutation_threshold = 100
+    schedule_delay = '0s'
+    startup_delay = '100ms'
 
-    [plugins."io.containerd.grpc.v1.cri".registry]
-      config_path = ""
+  [plugins.'io.containerd.grpc.v1.cri']
+    disable_tcp_service = true
+    stream_server_address = '127.0.0.1'
+    stream_server_port = '0'
+    stream_idle_timeout = '4h0m0s'
+    enable_tls_streaming = false
+    systemd_cgroup = true
 
-      [plugins."io.containerd.grpc.v1.cri".registry.auths]
+    [plugins.'io.containerd.grpc.v1.cri'.x509_key_pair_streaming]
+      tls_cert_file = ""
+      tls_key_file = ""
 
-      [plugins."io.containerd.grpc.v1.cri".registry.configs]
+  [plugins.'io.containerd.image-verifier.v1.bindir']
+    bin_dir = '/opt/containerd/image-verifier/bin'
+    max_verifiers = 10
+    per_verifier_timeout = '10s'
 
-      [plugins."io.containerd.grpc.v1.cri".registry.headers]
+  [plugins.'io.containerd.internal.v1.opt']
+    path = '/opt/containerd'
 
-      [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-
-  [plugins."io.containerd.internal.v1.opt"]
-    path = "/opt/containerd"
-
-  [plugins."io.containerd.internal.v1.restart"]
-    interval = "10s"
-
-  [plugins."io.containerd.internal.v1.tracing"]
+  [plugins.'io.containerd.internal.v1.tracing']
+    service_name = 'containerd'
     sampling_ratio = 1.0
-    service_name = "containerd"
 
-  [plugins."io.containerd.metadata.v1.bolt"]
-    content_sharing_policy = "shared"
+  [plugins.'io.containerd.metadata.v1.bolt']
+    content_sharing_policy = 'shared'
+    no_sync = false
 
-  [plugins."io.containerd.monitor.v1.cgroups"]
+  [plugins.'io.containerd.monitor.container.v1.restart']
+    interval = '10s'
+
+  [plugins.'io.containerd.monitor.task.v1.cgroups']
     no_prometheus = false
 
-  [plugins."io.containerd.nri.v1.nri"]
+  [plugins.'io.containerd.nri.v1.nri']
     disable = true
+    socket_path = '/var/run/nri/nri.sock'
+    plugin_path = '/opt/nri/plugins'
+    plugin_config_path = '/etc/nri/conf.d'
+    plugin_registration_timeout = '5s'
+    plugin_request_timeout = '2s'
     disable_connections = false
-    plugin_config_path = "/etc/nri/conf.d"
-    plugin_path = "/opt/nri/plugins"
-    plugin_registration_timeout = "5s"
-    plugin_request_timeout = "2s"
-    socket_path = "/var/run/nri/nri.sock"
 
-  [plugins."io.containerd.runtime.v2.task"]
-    platforms = ["linux/amd64"]
-    sched_core = false
+  [plugins.'io.containerd.runtime.v2.task']
+    platforms = ['linux/amd64']
 
-  [plugins."io.containerd.service.v1.diff-service"]
-    default = ["walking"]
+  [plugins.'io.containerd.service.v1.diff-service']
+    default = ['walking']
+    sync_fs = false
 
-  [plugins."io.containerd.service.v1.tasks-service"]
+  [plugins.'io.containerd.service.v1.tasks-service']
     blockio_config_file = ""
     rdt_config_file = ""
 
-  [plugins."io.containerd.snapshotter.v1.blockfile"]
-    fs_type = ""
-    mount_options = []
+  [plugins.'io.containerd.shim.v1.manager']
+    env = []
+
+  [plugins.'io.containerd.snapshotter.v1.blockfile']
     root_path = ""
     scratch_file = ""
-
-  [plugins."io.containerd.snapshotter.v1.devmapper"]
-    async_remove = false
-    base_image_size = ""
-    discard_blocks = false
-    fs_options = ""
     fs_type = ""
-    pool_name = ""
-    root_path = ""
-
-  [plugins."io.containerd.snapshotter.v1.native"]
-    root_path = ""
-
-  [plugins."io.containerd.snapshotter.v1.overlayfs"]
     mount_options = []
+    recreate_scratch = false
+
+  [plugins.'io.containerd.snapshotter.v1.devmapper']
     root_path = ""
-    sync_remove = false
+    pool_name = ""
+    base_image_size = ""
+    async_remove = false
+    discard_blocks = false
+    fs_type = ""
+    fs_options = ""
+
+  [plugins.'io.containerd.snapshotter.v1.erofs']
+    root_path = ""
+    ovl_mount_options = []
+    enable_fsverity = false
+
+  [plugins.'io.containerd.snapshotter.v1.native']
+    root_path = ""
+
+  [plugins.'io.containerd.snapshotter.v1.overlayfs']
+    root_path = ""
     upperdir_label = false
+    sync_remove = false
+    slow_chown = false
+    mount_options = []
 
-  [plugins."io.containerd.tracing.processor.v1.otlp"]
-    endpoint = ""
-    insecure = false
-    protocol = ""
+  [plugins.'io.containerd.tracing.processor.v1.otlp']
 
-  [plugins."io.containerd.transfer.v1.local"]
-    config_path = ""
+  [plugins.'io.containerd.transfer.v1.local']
     max_concurrent_downloads = 3
+    concurrent_layer_fetch_buffer = 0
     max_concurrent_uploaded_layers = 3
+    check_platform_supported = false
+    config_path = ""
 
-    [[plugins."io.containerd.transfer.v1.local".unpack_config]]
+    [[plugins.'io.containerd.transfer.v1.local'.unpack_config]]
+      platform = 'linux/amd64'
+      snapshotter = 'overlayfs'
       differ = ""
-      platform = "linux/amd64"
-      snapshotter = "overlayfs"
+      config_type = ""
+      layer_types = []
 
-[proxy_plugins]
-
-[stream_processors]
-
-  [stream_processors."io.containerd.ocicrypt.decoder.v1.tar"]
-    accepts = ["application/vnd.oci.image.layer.v1.tar+encrypted"]
-    args = ["--decryption-keys-path", "/etc/containerd/ocicrypt/keys"]
-    env = ["OCICRYPT_KEYPROVIDER_CONFIG=/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf"]
-    path = "ctd-decoder"
-    returns = "application/vnd.oci.image.layer.v1.tar"
-
-  [stream_processors."io.containerd.ocicrypt.decoder.v1.tar.gzip"]
-    accepts = ["application/vnd.oci.image.layer.v1.tar+gzip+encrypted"]
-    args = ["--decryption-keys-path", "/etc/containerd/ocicrypt/keys"]
-    env = ["OCICRYPT_KEYPROVIDER_CONFIG=/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf"]
-    path = "ctd-decoder"
-    returns = "application/vnd.oci.image.layer.v1.tar+gzip"
+[cgroup]
+  path = ""
 
 [timeouts]
-  "io.containerd.timeout.bolt.open" = "0s"
-  "io.containerd.timeout.metrics.shimstats" = "2s"
-  "io.containerd.timeout.shim.cleanup" = "5s"
-  "io.containerd.timeout.shim.load" = "5s"
-  "io.containerd.timeout.shim.shutdown" = "3s"
-  "io.containerd.timeout.task.state" = "2s"
+  'io.containerd.timeout.bolt.open' = '0s'
+  'io.containerd.timeout.cri.defercleanup' = '1m0s'
+  'io.containerd.timeout.metrics.shimstats' = '2s'
+  'io.containerd.timeout.shim.cleanup' = '5s'
+  'io.containerd.timeout.shim.load' = '5s'
+  'io.containerd.timeout.shim.shutdown' = '3s'
+  'io.containerd.timeout.task.state' = '2s'
 
-[ttrpc]
-  address = ""
-  gid = 0
-  uid = 0
+[stream_processors]
+  [stream_processors.'io.containerd.ocicrypt.decoder.v1.tar']
+    accepts = ['application/vnd.oci.image.layer.v1.tar+encrypted']
+    returns = 'application/vnd.oci.image.layer.v1.tar'
+    path = 'ctd-decoder'
+    args = ['--decryption-keys-path', '/etc/containerd/ocicrypt/keys']
+    env = ['OCICRYPT_KEYPROVIDER_CONFIG=/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf']
+
+  [stream_processors.'io.containerd.ocicrypt.decoder.v1.tar.gzip']
+    accepts = ['application/vnd.oci.image.layer.v1.tar+gzip+encrypted']
+    returns = 'application/vnd.oci.image.layer.v1.tar+gzip'
+    path = 'ctd-decoder'
+    args = ['--decryption-keys-path', '/etc/containerd/ocicrypt/keys']
+    env = ['OCICRYPT_KEYPROVIDER_CONFIG=/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf']
+
 
 ${if cfg.nvidiaEnable then ''
 accept-nvidia-visible-devices-as-volume-mounts = false
