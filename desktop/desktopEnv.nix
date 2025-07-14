@@ -28,7 +28,6 @@ with lib;
   environment.gnome.excludePackages = (with pkgs; [
     gnome-photos
     gnome-tour
-  ]) ++ (with pkgs.gnome; [
     gnome-maps
     gnome-weather
     cheese # webcam tool
