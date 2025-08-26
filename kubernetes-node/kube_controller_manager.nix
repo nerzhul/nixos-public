@@ -96,7 +96,7 @@ users:
 '';
 	environment.etc."kubernetes/pki/sa.crt".text = kubeControllerManagerCfg.controllerManagerCert;
 	environment.etc."kubernetes/pki/sa.key".text = kubeControllerManagerCfg.controllerManagerKey;
-    environment.etc."kubernetes/manifests/kube-controller-manager.yml".text = ''
+  environment.etc."kubernetes/manifests/kube-controller-manager.yml".text = ''
 ---
 apiVersion: v1
 kind: Pod

@@ -111,6 +111,11 @@ with lib;
         type = types.str;
         description = ''Bootstrap token.'';
       };
+      taintKey = mkOption {
+        default = "";
+        type = types.str;
+        description = ''Node taint key to avoid scheduling pods (empty for no taint).'';
+      };
     };
   };
   config = mkIf kubeletCfg.enable {
@@ -166,6 +171,10 @@ systemReserved:
 clusterDomain: "${kubeletCfg.clusterDomain}"
 clusterDNS:
   - "${kubeletCfg.dnsClusterIP}"
+${if kubeletCfg.taintKey != "" then ''
+registerWithTaints:
+- {key: "${kubeletCfg.taintKey}", value: "true", effect: "NoSchedule"}
+'' else ""}
 rotateCertificates: true
 '';
     environment.etc."kubernetes/bootstrap.kubeconfig".text = ''
