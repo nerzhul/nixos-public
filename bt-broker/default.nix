@@ -1,4 +1,12 @@
 { config, pkgs, ... }:
+let
+  firmwareRtl8761bu = (pkgs.runCommand "rtl8761bu-firmware" {
+  } ''
+    mkdir -p $out/lib/firmware/rtl_bt
+    cp ${pkgs.linux-firmware}/lib/firmware/rtl_bt/rtl8761bu_fw.bin \
+         $out/lib/firmware/rtl_bt/rtl8761bu_fw.bin
+  '');
+in
 {
   hardware.bluetooth = {
     enable = true;
@@ -14,22 +22,10 @@
     enable = true; # if not already enabled
   };
 
-  nixpkgs.overlays = [
-    (self: super: {
-      linux-firmware-uncompressed = super.linux-firmware.overrideAttrs (old: {
-        postInstall = (old.postInstall or "") + ''
-          echo "Decompressing rtl8761bu_fw.bin.zst..."
-          mkdir -p $out/lib/firmware/rtl_bt
-          zstd -d $out/lib/firmware/rtl_bt/rtl8761bu_fw.bin.zst \
-            -o $out/lib/firmware/rtl_bt/rtl8761bu_fw.bin
-        '';
-      });
-    })
-  ];
+  system.activationScripts.customFirmware.text = ''
+    mkdir -p /lib/firmware/rtl_bt
+    cp -r ${firmwareRtl8761bu}/lib/firmware/rtl_bt/* /lib/firmware/rtl_bt/
+  '';
 
-  hardware.firmware = [ pkgs.linux-firmware-uncompressed ];
-
-  hardware.enableAllFirmware = true;
-  hardware.enableRedistributableFirmware = true;
   nixpkgs.config.allowUnfree = true;
 }
