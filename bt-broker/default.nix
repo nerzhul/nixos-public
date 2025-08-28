@@ -13,4 +13,6 @@
   services.pipewire = {
     enable = true; # if not already enabled
   };
+
+  hardware.enableAllFirmware = true;
 }
