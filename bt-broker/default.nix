@@ -31,11 +31,7 @@ in
     };
   };
 
-  sound.enable = true;
   hardware.pulseaudio.enable = false;
-
-  # Bluetooth audio support
-  services.pipewire.media-session.enable = true;
 
   nixpkgs.config.pipewire = {
     withBluetooth = true;
