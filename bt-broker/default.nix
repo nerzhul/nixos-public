@@ -23,6 +23,23 @@ in
     enable = true;
     audio.enable = true;
     pulse.enable = true;
+    extraConfig.pipewire."bluez-monitor" = {
+      properties = {
+        "bluez5.enable" = true;
+        "bluez5.roles" = [ "a2dp_sink" "a2dp_source" "headset_head_unit" "headset_audio_gateway" ];
+      };
+    };
+  };
+
+  sound.enable = true;
+  hardware.pulseaudio.enable = false;
+
+  # Bluetooth audio support
+  services.pipewire.media-session.enable = true;
+
+  nixpkgs.config.pipewire = {
+    withBluetooth = true;
+    withAlsa = true;
   };
 
   system.activationScripts.customFirmware.text = ''
