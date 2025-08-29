@@ -6,6 +6,7 @@ let
     cp ${pkgs.linux-firmware}/lib/firmware/rtl_bt/rtl8761bu_fw.bin \
          $out/lib/firmware/rtl_bt/rtl8761bu_fw.bin
   '');
+  brokerName = "BrokerBroken";
 in
 {
   hardware.bluetooth = {
@@ -13,7 +14,7 @@ in
     powerOnBoot = true;
     settings = {
         General = {
-        Experimental = true; # Show battery charge of Bluetooth devices
+          Class = "0x20041C";
         };
     };
   };
@@ -21,22 +22,46 @@ in
   security.rtkit.enable = true; # Real-time scheduling for audio
   services.pipewire = {
     enable = true;
+    socketActivation = false;
+    alsa.enable = true;
+    alsa.support32Bit = true;
     audio.enable = true;
     pulse.enable = true;
-    extraConfig.pipewire."bluez-monitor" = {
-      properties = {
-        "bluez5.enable" = true;
-        "bluez5.roles" = [ "a2dp_sink" "a2dp_source" "headset_head_unit" "headset_audio_gateway" ];
-      };
+    jack.enable = false;
+    wireplumber = {
+      enable = true;
     };
   };
 
-  hardware.pulseaudio.enable = false;
+  users.extraUsers.audio-broker = {
+    enable = true;
+    group = "audio";
+    extraGroups = [ "audio" "pipewire" "video" "wheel" ];
+    isNormalUser = true;
+    linger = true;
 
-  nixpkgs.config.pipewire = {
-    withBluetooth = true;
-    withAlsa = true;
+    # Remember you need (currently) some manual config in the user context
+    # export XDG_RUNTIME_DIR=/run/user/$(id -u)
+    # export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
+    # systemctl --user daemon-reexec
+    # systemctl --user start pipewire pipewire-pulse
+    # mkdir -p /home/audio-broker/.config/environment.d
+    # echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" > /home/audio-broker/.config/environment.d/90-runtime.conf
+    # echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus" >> /home/audio-broker/.config/environment.d/90-runtime.conf
   };
+
+  systemd.user.services.bluetooth-rename = {
+    description = "Rename Bluetooth adapter";
+    after = [ "bluetooth.service" ];
+    wants = [ "bluetooth.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bluez}/bin/bluetoothctl system-alias ${brokerName}";
+    };
+  };
+
+  services.pulseaudio.enable = false;
+  services.dbus.enable = true;
 
   system.activationScripts.customFirmware.text = ''
     mkdir -p /lib/firmware/rtl_bt
