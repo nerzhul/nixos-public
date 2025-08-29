@@ -18,8 +18,11 @@ in
     };
   };
 
+  security.rtkit.enable = true; # Real-time scheduling for audio
   services.pipewire = {
-    enable = true; # if not already enabled
+    enable = true;
+    audio.enable = true;
+    pulse.enable = true;
   };
 
   system.activationScripts.customFirmware.text = ''
