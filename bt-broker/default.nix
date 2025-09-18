@@ -9,6 +9,10 @@ let
   brokerName = "BrokerBroken";
 in
 {
+  imports = [
+    ./broker-app.nix
+  ];
+  
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
