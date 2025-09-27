@@ -5,6 +5,8 @@ let
     mkdir -p $out/lib/firmware/rtl_bt
     cp ${pkgs.linux-firmware}/lib/firmware/rtl_bt/rtl8761bu_fw.bin \
          $out/lib/firmware/rtl_bt/rtl8761bu_fw.bin
+    cp ${pkgs.linux-firmware}/lib/firmware/rtl_bt/rtl8761bu_config.bin \
+         $out/lib/firmware/rtl_bt/rtl8761bu_config.bin
   '');
   brokerName = "BrokerBroken";
 in
