@@ -77,8 +77,5 @@ in
     cp -r ${firmwareRtl8761bu}/lib/firmware/rtl_bt/* /lib/firmware/rtl_bt/
   '';
 
-  # TODO: enhance this to be more precise
-  boot.kernelPackages = if isAarch64 then rpi5LinuxPackage else pkgs.linuxPackages;
-
   nixpkgs.config.allowUnfree = true;
 }
