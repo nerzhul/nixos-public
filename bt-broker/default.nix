@@ -8,6 +8,9 @@ let
     cp ${pkgs.linux-firmware}/lib/firmware/rtl_bt/rtl8761bu_config.bin \
          $out/lib/firmware/rtl_bt/rtl8761bu_config.bin
   '');
+
+  isAarch64 = builtins.match "aarch64-.*" builtins.currentSystem != null;
+  rpi5LinuxPackage = (import (builtins.fetchTarball https://gitlab.com/vriska/nix-rpi5/-/archive/main.tar.gz)).legacyPackages.aarch64-linux.linuxPackages_rpi5;
   brokerName = "BrokerBroken";
 in
 {
@@ -73,6 +76,9 @@ in
     mkdir -p /lib/firmware/rtl_bt
     cp -r ${firmwareRtl8761bu}/lib/firmware/rtl_bt/* /lib/firmware/rtl_bt/
   '';
+
+  # TODO: enhance this to be more precise
+  boot.kernelPackages = if isAarch64 then rpi5LinuxPackage else pkgs.linuxPackages;
 
   nixpkgs.config.allowUnfree = true;
 }
