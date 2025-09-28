@@ -5,8 +5,7 @@ let
       bridge_stp_helper
       request_key_helper
     ];
-    extraConfig = ''
-    '';
+    ignoreConfigErrors = true;
   };
 
   linuxPackages_rpi5 = pkgs.linuxPackagesFor linux_rpi5;
