@@ -18,6 +18,7 @@ lib.overrideDerivation (buildLinux (args // {
   };
 
   defconfig = "bcm2712_defconfig";
+  extraConfig = "";
 
   features = {
     efiBootStub = false;
