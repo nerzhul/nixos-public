@@ -1,10 +1,9 @@
 { stdenv, lib, buildPackages, fetchFromGitHub, perl, buildLinux, ... } @ args:
 
 let
-  # Imported from https://gitlab.com/vriska/nix-rpi5 with some modifications
   # NOTE: raspberrypifw & raspberryPiWirelessFirmware should be updated with this
-  modDirVersion = "6.6.51";
-  tag = "stable_20241008";
+  modDirVersion = "6.12.47";
+  tag = "stable_20250916";
 in
 lib.overrideDerivation (buildLinux (args // {
   version = "${modDirVersion}-${tag}";

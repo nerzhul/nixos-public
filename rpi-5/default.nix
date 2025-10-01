@@ -1,7 +1,7 @@
 {config, lib, pkgs, ... }:
 let
   # Must be synced with kernel.nix
-  nix_rpi5_pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/3ecacf46f1924b866212611642480271610c2825.tar.gz") {};
+  nix_rpi5_pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/e9f00bd893984bc8ce46c895c3bf7cac95331127.tar.gz") {};
   linux_rpi5 = pkgs.callPackage ./kernel.nix {
     kernelPatches = with pkgs.kernelPatches; [
       bridge_stp_helper
