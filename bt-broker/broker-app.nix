@@ -11,7 +11,7 @@ let
       owner = "nerzhul";
       repo = "home-bt-broker";
       rev = "main";
-      sha256 = "sha256-XpsiPE2IIaJ0EzABOOzpiKzSP2BS/g/h2JGYBsHMu5M=";
+      sha256 = "sha256-uVYY2do8a8kr2lX99+CimPsQEQFG1ogl9UOpt9XR3LQ=";
     };
 
     vendorHash = null;
