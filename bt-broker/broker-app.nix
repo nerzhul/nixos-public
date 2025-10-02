@@ -2,6 +2,7 @@
 
 let
   brokerAppName = "home-bt-broker";
+  audioUserID = 1001;
   homeBtBroker = pkgs.buildGoModule rec {
     pname = "${brokerAppName}";
     version = "unstable";
@@ -44,6 +45,9 @@ in {
       User = "audio-broker";
       Group = "audio";
       WorkingDirectory = "/var/lib/home-bt-broker";
+      Environment = "XDG_RUNTIME_DIR=/run/user/${toString audioUserID}";
     };
+
+    path = [pkgs.pipewire];
   };
 }

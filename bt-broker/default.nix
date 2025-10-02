@@ -12,6 +12,7 @@ let
   isAarch64 = builtins.match "aarch64-.*" builtins.currentSystem != null;
   rpi5LinuxPackage = (import (builtins.fetchTarball https://gitlab.com/vriska/nix-rpi5/-/archive/main.tar.gz)).legacyPackages.aarch64-linux.linuxPackages_rpi5;
   brokerName = "BrokerBroken";
+  audioUserID = 1001;
 in
 {
   imports = [
@@ -72,15 +73,12 @@ in
     extraGroups = [ "audio" "pipewire" "video" "wheel" ];
     isNormalUser = true;
     linger = true;
+    uid = audioUserID;
+    description = "Audio Broker User";
 
     # Remember you need (currently) some manual config in the user context
     # export XDG_RUNTIME_DIR=/run/user/$(id -u)
-    # export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
-    # systemctl --user daemon-reexec
     # systemctl --user start pipewire pipewire-pulse
-    # mkdir -p /home/audio-broker/.config/environment.d
-    # echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" > /home/audio-broker/.config/environment.d/90-runtime.conf
-    # echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus" >> /home/audio-broker/.config/environment.d/90-runtime.conf
   };
 
   systemd.user.services.bluetooth-rename = {
