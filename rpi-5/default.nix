@@ -17,5 +17,6 @@ in {
     raspberrypifw
     raspberrypiWirelessFirmware
     raspberrypi-eeprom
+    linux-firmware
   ];
 }
