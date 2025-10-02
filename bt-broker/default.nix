@@ -39,6 +39,15 @@ in
     jack.enable = false;
     wireplumber = {
       enable = true;
+      extraConfig = {
+        "99-bluetooth" = {
+          "wireplumber.profiles" = {
+            "main" = {
+              "monitor.bluez.seat-monitoring" = "disabled";
+            };
+          };
+        };
+      };
     };
 
     extraConfig.client = { 
