@@ -40,6 +40,21 @@ in
     wireplumber = {
       enable = true;
     };
+
+    extraConfig.client = { 
+      "combined-sink" = {
+        "context.modules" = [
+            {   
+                "name" = "libpipewire-module-combine-stream";
+                "args" = {
+                    "node.description" = "Combined Output";
+                    "node.name"        = "combined_output";
+                    "combine.sinks"    = [];
+                };
+            }
+        ];
+      };
+    };
   };
 
   users.extraUsers.audio-broker = {
