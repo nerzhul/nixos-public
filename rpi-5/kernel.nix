@@ -3,8 +3,8 @@
 let
   # Imported from https://gitlab.com/vriska/nix-rpi5 with some modifications
   # NOTE: raspberrypifw & raspberryPiWirelessFirmware should be updated with this
-  modDirVersion = "6.6.51";
-  tag = "stable_20241008";
+  modDirVersion = "6.1.63";
+  tag = "stable_20231123";
 in
 lib.overrideDerivation (buildLinux (args // {
   version = "${modDirVersion}-${tag}";
@@ -14,14 +14,11 @@ lib.overrideDerivation (buildLinux (args // {
     owner = "raspberrypi";
     repo = "linux";
     rev = tag;
-    hash = "sha256-phCxkuO+jUGZkfzSrBq6yErQeO2Td+inIGHxctXbD5U=";
+    hash = "sha256-4Rc57y70LmRFwDnOD4rHoHGmfxD9zYEAwYm9Wvyb3no=";
   };
 
   defconfig = "bcm2712_defconfig";
-  extraConfig = ''
-    CONFIG_PREEMPT_RT_FULL=y
-    CONFIG_PREEMPT=y
-  '';
+  extraConfig = "";
 
   features = {
     efiBootStub = false;
