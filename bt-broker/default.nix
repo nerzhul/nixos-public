@@ -50,10 +50,10 @@ in {
             "node.description" = "Combined Output";
             "node.name" = "combined_output";
             "combine.mode" = "sink";
-            "combine.props" = {
-              "audio.position" = [ "FL" "FR" ];
-            };
-            "stream.props" = { };
+            # "combine.props" = {
+            #   "audio.position" = [ "FL" "FR" ];
+            # };
+            "combine.latency-compensate" = "false";
             "stream.rules" = [
               {
                 "matches" = [

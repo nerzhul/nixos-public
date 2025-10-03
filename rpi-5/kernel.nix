@@ -18,7 +18,10 @@ lib.overrideDerivation (buildLinux (args // {
   };
 
   defconfig = "bcm2712_defconfig";
-  extraConfig = "";
+  extraConfig = ''
+    CONFIG_PREEMPT_RT_FULL=y
+    CONFIG_PREEMPT=y
+  '';
 
   features = {
     efiBootStub = false;
