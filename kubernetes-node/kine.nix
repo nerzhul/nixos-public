@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   version = "v0.13.6-amd64";
-  version-postgres = "17.2";
+  version-postgres = "17.6";
   kineCfg = config.services.kine;
 in
 with lib;
