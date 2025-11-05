@@ -9,4 +9,6 @@
     enable = true;
     settings.PermitRootLogin = "yes";
   };
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 }
