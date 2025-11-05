@@ -2,6 +2,7 @@
 {
   imports = [
     ./users.nix
+    ./pkg-builder.nix
   ];
 
   # Enable the OpenSSH daemon.
