@@ -1,9 +1,5 @@
-{ config, pkgs, ... }:
-{
-  imports = [
-    ./users.nix
-    ./pkg-builder.nix
-  ];
+{ config, pkgs, ... }: {
+  imports = [ ./users.nix ./cache.nix ./pkg-builder.nix ];
 
   # Enable the OpenSSH daemon.
   services.openssh = {
