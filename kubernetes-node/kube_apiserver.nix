@@ -86,11 +86,6 @@ with lib;
         type = types.str;
         description = ''ETCD CA certificate.'';
       };
-      apiserverKey = mkOption {
-        default = "";
-        type = types.str;
-        description = ''Kube-apiserver key.'';
-      };
       apiServerDomainName = mkOption {
         default = "kubernetes.k8s.local";
         type = types.str;
@@ -142,7 +137,6 @@ with lib;
     environment.etc."kubernetes/pki/etcd.key".text = kubeApiServerCfg.etcdKey;
     environment.etc."kubernetes/pki/etcd.crt".text = kubeApiServerCfg.etcdCert;
     environment.etc."kubernetes/pki/etcd-ca.crt".text = kubeApiServerCfg.etcdCACert;
-    environment.etc."kubernetes/pki/kube-apiserver.key".text = kubeApiServerCfg.apiserverKey;
     environment.etc."kubernetes/pki/kube-apiserver-csr.conf".text = ''
       [req]
       req_extensions = v3_req
@@ -215,7 +209,8 @@ with lib;
               - sh
               - -c
               - |
-                openssl req -new -key /etc/kubernetes/pki/kube-apiserver.key -out /etc/kubernetes/generated/pki/kube-apiserver.csr \
+                openssl genrsa -out /etc/kubernetes/generated/pki/kube-apiserver.key 2048
+                openssl req -new -key /etc/kubernetes/generated/pki/kube-apiserver.key -out /etc/kubernetes/generated/pki/kube-apiserver.csr \
                   -config /etc/kubernetes/pki/kube-apiserver-csr.conf
                 openssl x509 -req -in /etc/kubernetes/generated/pki/kube-apiserver.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
                   -CAserial /etc/kubernetes/generated/pki/ca.srl \
@@ -259,7 +254,7 @@ with lib;
               - --service-cluster-ip-range=${kubeApiServerCfg.serviceClusterIPRange}
               - --service-node-port-range=${toString kubeApiServerCfg.nodePortStart}-${toString kubeApiServerCfg.nodePortEnd}
               - --tls-cert-file=/etc/kubernetes/generated/pki/kube-apiserver.crt
-              - --tls-private-key-file=/etc/kubernetes/pki/kube-apiserver.key
+              - --tls-private-key-file=/etc/kubernetes/generated/pki/kube-apiserver.key
               - --enable-bootstrap-token-auth=true
               - --kubelet-client-certificate=/etc/kubernetes/generated/pki/apiserver-kubelet-client.crt
               - --kubelet-client-key=/etc/kubernetes/generated/pki/apiserver-kubelet-client.key
