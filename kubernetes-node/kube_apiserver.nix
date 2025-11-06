@@ -121,16 +121,6 @@ with lib;
         type = types.str;
         description = ''Front proxy CA certificate.'';
       };
-      apiserverKubeletClientCert = mkOption {
-        default = "";
-        type = types.str;
-        description = ''Kube-apiserver kubelet client certificate.'';
-      };
-      apiserverKubeletClientKey = mkOption {
-        default = "";
-        type = types.str;
-        description = ''Kube-apiserver kubelet client key.'';
-      };
       admissionPlugins = mkOption {
         default = [ "DefaultStorageClass" "DefaultTolerationSeconds" "LimitRanger" "NamespaceLifecycle" "PodNodeSelector" "PodSecurity" "ResourceQuota" "ServiceAccount" ];
         type = types.listOf types.str;
@@ -178,8 +168,28 @@ with lib;
     environment.etc."kubernetes/pki/front-proxy-client.crt".text = kubeApiServerCfg.frontProxyClientCert;
     environment.etc."kubernetes/pki/front-proxy-ca.crt".text = kubeApiServerCfg.frontProxyCACert;
     environment.etc."kubernetes/pki/sa.key".text = kubeApiServerCfg.apiserverSAKey;
-    environment.etc."kubernetes/pki/apiserver-kubelet-client.crt".text = kubeApiServerCfg.apiserverKubeletClientCert;
-    environment.etc."kubernetes/pki/apiserver-kubelet-client.key".text = kubeApiServerCfg.apiserverKubeletClientKey;
+    environment.etc."kubernetes/pki/apiserver-kubelet-client-csr.conf".text = ''
+      [req]
+      distinguished_name = req_distinguished_name
+      req_extensions = v3_req
+      prompt = no
+
+      [req_distinguished_name]
+      CN = apiserver-kubelet-client
+      O = system:masters
+
+      [v3_req]
+      keyUsage = digitalSignature, keyEncipherment
+      extendedKeyUsage = clientAuth
+      subjectAltName = @alt_names
+
+      [alt_names]
+      DNS.1 = kubernetes
+      DNS.2 = kubernetes.default
+      DNS.3 = kubernetes.default.svc
+      DNS.4 = kubernetes.default.svc.cluster.local
+      DNS.5 = ${kubeApiServerCfg.apiServerDomainName}
+      IP.1 = ${kubeApiServerCfg.apiServerIP}'';
     environment.etc."kubernetes/manifests/kube-apiserver.yml".text = ''
       ---
       apiVersion: v1
@@ -210,6 +220,12 @@ with lib;
                 openssl x509 -req -in /etc/kubernetes/generated/pki/kube-apiserver.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
                   -CAserial /etc/kubernetes/generated/pki/ca.srl \
                   -out /etc/kubernetes/generated/pki/kube-apiserver.crt -days 365 -extensions v3_req -extfile /etc/kubernetes/pki/kube-apiserver-csr.conf
+                openssl genrsa -out /etc/kubernetes/generated/pki/apiserver-kubelet-client.key 2048
+                openssl req -new -key /etc/kubernetes/generated/pki/apiserver-kubelet-client.key -out /etc/kubernetes/generated/pki/apiserver-kubelet-client.csr \
+                  -config /etc/kubernetes/pki/apiserver-kubelet-client-csr.conf
+                openssl x509 -req -in /etc/kubernetes/generated/pki/apiserver-kubelet-client.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
+                  -CAserial /etc/kubernetes/generated/pki/ca.srl \
+                  -out /etc/kubernetes/generated/pki/apiserver-kubelet-client.crt -days 365 -extensions v3_req -extfile /etc/kubernetes/pki/apiserver-kubelet-client-csr.conf
             volumeMounts:
               - name: pki
                 mountPath: /etc/kubernetes/pki
@@ -245,8 +261,8 @@ with lib;
               - --tls-cert-file=/etc/kubernetes/generated/pki/kube-apiserver.crt
               - --tls-private-key-file=/etc/kubernetes/pki/kube-apiserver.key
               - --enable-bootstrap-token-auth=true
-              - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
-              - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
+              - --kubelet-client-certificate=/etc/kubernetes/generated/pki/apiserver-kubelet-client.crt
+              - --kubelet-client-key=/etc/kubernetes/generated/pki/apiserver-kubelet-client.key
               - --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key
               - --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt
               - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
