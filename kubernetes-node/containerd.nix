@@ -3,15 +3,15 @@ let
   cfg = config.services.containerd;
   containerd = with pkgs; buildGoModule rec {
     pname = "containerd";
-    version = "2.2.0";
+    version = "2.2.1";
 
     # Generate hash like this
-    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v2.2.0.zip)
+    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v2.2.1.zip)
     src = fetchFromGitHub {
       owner = "containerd";
       repo = "containerd";
       rev = "v${version}";
-      hash = "sha256-LXBGA03FTrrbxlH+DxPBFtp3/AYQf096YE2rpe6A+WM=";
+      hash = "sha256-fDOfN0XESrBTDW7Nxj9niqU93BQ5/JaGLwAR3u6Xaik=";
     };
 
     vendorHash = null;
