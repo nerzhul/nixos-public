@@ -24,6 +24,27 @@ with lib;
           description = ''DNS nameservers.'';
         };
       };
+      resources = {
+        requests = {
+          cpu = mkOption {
+            default = "100m";
+            type = types.str;
+            description = ''CPU request.'';
+          };
+          memory = mkOption {
+            default = "1Gi";
+            type = types.str;
+            description = ''Memory request.'';
+          };
+        };
+        limits = {
+          memory = mkOption {
+            default = "1Gi";
+            type = types.str;
+            description = ''Memory limit.'';
+          };
+        };
+      };
       audit = {
         enable = mkOption {
           default = false;
@@ -291,10 +312,10 @@ with lib;
               failureThreshold: 3
             resources:
               requests:
-                cpu: 100m
-                memory: 1Gi
+                cpu: ${kubeApiServerCfg.resources.requests.cpu}
+                memory: ${kubeApiServerCfg.resources.requests.memory}
               limits:
-                memory: 1Gi
+                memory: ${kubeApiServerCfg.resources.limits.memory}
             readinessProbe:
               httpGet:
                 path: /readyz
