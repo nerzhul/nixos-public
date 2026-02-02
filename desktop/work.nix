@@ -26,7 +26,6 @@ with lib;
       ccid
       tailscale
       yq
-      yubikey-personalization-gui
     ];
   };
 }
