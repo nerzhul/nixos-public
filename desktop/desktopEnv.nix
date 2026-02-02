@@ -16,7 +16,6 @@ with lib;
   # Enable CUPS to print documents.
   # services.printing.enable = true;
 
-  service.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
     pulse.enable = true;
