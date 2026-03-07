@@ -182,9 +182,9 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 128Mi
+          memory: 196Mi
         limits:
-          memory: 128Mi
+          memory: 196Mi
       volumeMounts:
         - name: kubeconfig
           mountPath: /etc/kubernetes/controller-manager.kubeconfig
