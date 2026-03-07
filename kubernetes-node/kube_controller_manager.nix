@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   kubeControllerManagerCfg = config.services.kubeControllerManager;
-  version = "v1.35.0";
+  version = "v1.35.2";
   b64 = import ../util/base64.nix { inherit lib; };
 in
 with lib;
@@ -39,11 +39,6 @@ with lib;
         default = "k8s";
         type = types.str;
         description = ''Bootstrap kubeconfig context name.'';
-      };
-      controllerManagerCert = mkOption {
-        default = "";
-        type = types.str;
-        description = ''Controller Manager client certificate.'';
       };
       controllerManagerKey = mkOption {
         default = "";
@@ -91,11 +86,29 @@ preferences: {}
 users:
 - name: "system:kube-controller-manager"
   user:
-    client-certificate-data: ${b64.toBase64 kubeControllerManagerCfg.controllerManagerCert}
-    client-key-data: ${b64.toBase64 kubeControllerManagerCfg.controllerManagerKey}
+    client-certificate: /etc/kubernetes/generated/pki/kube-controllermanager.crt
+    client-key: /etc/kubernetes/pki/sa.key
 '';
-	environment.etc."kubernetes/pki/sa.crt".text = kubeControllerManagerCfg.controllerManagerCert;
 	environment.etc."kubernetes/pki/sa.key".text = kubeControllerManagerCfg.controllerManagerKey;
+  environment.etc."kubernetes/pki/kube-controllermanager-csr.conf".text = ''
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+CN = system:kube-controller-manager
+O = system:kube-controller-manager
+
+[v3_req]
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth, serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = kube-controller-manager
+DNS.2 = kube-controller-manager.kube-system
+'';
   environment.etc."kubernetes/manifests/kube-controller-manager.yml".text = ''
 ---
 apiVersion: v1
@@ -117,6 +130,26 @@ spec:
     nameservers: ${builtins.toJSON kubeControllerManagerCfg.dns.nameservers}
   hostNetwork: true
   priorityClassName: system-cluster-critical
+  initContainers:
+    - name: pki-init
+      image: alpine/openssl:3.3.3
+      command:
+        - sh
+        - -c
+        - |
+          openssl req -new -key /etc/kubernetes/pki/sa.key -out /etc/kubernetes/generated/pki/kube-controllermanager.csr \
+            -config /etc/kubernetes/pki/kube-controllermanager-csr.conf
+          openssl x509 -req -in /etc/kubernetes/generated/pki/kube-controllermanager.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
+            -CAserial /etc/kubernetes/generated/pki/ca.srl \
+            -out /etc/kubernetes/generated/pki/kube-controllermanager.crt -days 365 -extensions v3_req -extfile /etc/kubernetes/pki/kube-controllermanager-csr.conf
+      volumeMounts:
+        - name: pki
+          mountPath: /etc/kubernetes/pki
+        - name: nixstore
+          mountPath: /nix/store
+          readOnly: true
+        - name: generated-pki
+          mountPath: /etc/kubernetes/generated/pki
   containers:
     - name: controller-manager
       image: registry.k8s.io/kube-controller-manager:${version}
@@ -160,6 +193,8 @@ spec:
         - name: nixstore
           mountPath: /nix/store
           readOnly: true
+        - name: generated-pki
+          mountPath: /etc/kubernetes/generated/pki
       securityContext:
         runAsNonRoot: true
         runAsUser: 10257
@@ -183,6 +218,8 @@ spec:
         successThreshold: 1
         failureThreshold: 3
   volumes:
+    - name: generated-pki
+      emptyDir: {}
     - name: kubeconfig
       hostPath:
         path: /etc/kubernetes/controller-manager.kubeconfig
