@@ -225,7 +225,7 @@ with lib;
         priorityClassName: system-cluster-critical
         initContainers:
           - name: pki-init
-            image: alpine/openssl:3.3.3
+            image: alpine/openssl:3.5.5
             command:
               - sh
               - -c
@@ -332,7 +332,6 @@ with lib;
             hostPath:
               path: /etc/static/kubernetes/pki
               type: Directory
-          # Horrible hack to remove in the future
           - name: nixstore
             hostPath:
               path: /nix/store

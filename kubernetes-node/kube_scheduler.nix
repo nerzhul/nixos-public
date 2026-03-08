@@ -40,16 +40,6 @@ with lib;
         type = types.str;
         description = ''Bootstrap kubeconfig context name.'';
       };
-      schedulerCertEncoded = mkOption {
-        default = "";
-        type = types.str;
-        description = ''Scheduler client certificate encoded.'';
-      };
-      schedulerKeyEncoded = mkOption {
-        default = "";
-        type = types.str;
-        description = ''Scheduler client key encoded.'';
-      };
     };
   };
   config = mkIf kubeSchedulerCfg.enable {
@@ -71,10 +61,25 @@ preferences: {}
 users:
 - name: "system:kube-scheduler"
   user:
-    client-certificate-data: ${kubeSchedulerCfg.schedulerCertEncoded}
-    client-key-data: ${kubeSchedulerCfg.schedulerKeyEncoded}
+    client-certificate: /etc/kubernetes/generated/pki/scheduler.crt
+    client-key: /etc/kubernetes/generated/pki/scheduler.key
 '';
+    environment.etc."kubernetes/pki/scheduler-csr.conf".text = ''
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
 
+[req_distinguished_name]
+CN = system:kube-scheduler
+O = system:kube-scheduler
+
+[v3_req]
+
+[alt_names]
+DNS.1 = kube-scheduler
+DNS.2 = kube-scheduler.kube-system
+'';
     environment.etc."kubernetes/scheduler.yaml".text = ''
 apiVersion: kubescheduler.config.k8s.io/v1
 kind: KubeSchedulerConfiguration
@@ -106,6 +111,31 @@ spec:
     nameservers: ${builtins.toJSON kubeSchedulerCfg.dns.nameservers}
   hostNetwork: true
   priorityClassName: system-cluster-critical
+  initContainers:
+    - name: pki-init
+      image: alpine/openssl:3.5.5
+      command:
+        - sh
+        - -c
+        - |
+          openssl genrsa -out /etc/kubernetes/generated/pki/scheduler.key 2048
+          openssl req -new -key /etc/kubernetes/pki/sa.key -out /etc/kubernetes/generated/pki/scheduler.csr \
+            -config /etc/kubernetes/pki/scheduler-csr.conf
+          openssl x509 -req -in /etc/kubernetes/generated/pki/scheduler.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
+            -CAserial /etc/kubernetes/generated/pki/ca.srl \
+            -out /etc/kubernetes/generated/pki/scheduler.crt -days 365 -extensions v3_req -extfile /etc/kubernetes/pki/scheduler-csr.conf
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10259
+        runAsGroup: 10999
+      volumeMounts:
+        - name: pki
+          mountPath: /etc/kubernetes/pki
+        - name: nixstore
+          mountPath: /nix/store
+          readOnly: true
+        - name: generated-pki
+          mountPath: /etc/kubernetes/generated/pki
   containers:
     - name: scheduler
       image: registry.k8s.io/kube-scheduler:${version}
@@ -132,6 +162,11 @@ spec:
           mountPath: /etc/kubernetes/scheduler.kubeconfig
         - name: pki
           mountPath: /etc/kubernetes/pki
+        - name: nixstore
+          mountPath: /nix/store
+          readOnly: true
+        - name: generated-pki
+          mountPath: /etc/kubernetes/generated/pki
       securityContext:
         runAsNonRoot: true
         runAsUser: 10259
@@ -163,9 +198,15 @@ spec:
       hostPath:
         path: /etc/kubernetes/scheduler.kubeconfig
         type: File
+    - name: generated-pki
+      emptyDir: {}
     - name: pki
       hostPath:
         path: /etc/static/kubernetes/pki
+        type: Directory
+    - name: nixstore
+      hostPath:
+        path: /nix/store
         type: Directory
       '';
   };
