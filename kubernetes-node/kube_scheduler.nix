@@ -119,7 +119,7 @@ spec:
         - -c
         - |
           openssl genrsa -out /etc/kubernetes/generated/pki/scheduler.key 2048
-          openssl req -new -key /etc/kubernetes/pki/sa.key -out /etc/kubernetes/generated/pki/scheduler.csr \
+          openssl req -new -key /etc/kubernetes/generated/pki/scheduler.key -out /etc/kubernetes/generated/pki/scheduler.csr \
             -config /etc/kubernetes/pki/scheduler-csr.conf
           openssl x509 -req -in /etc/kubernetes/generated/pki/scheduler.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial \
             -CAserial /etc/kubernetes/generated/pki/ca.srl \
