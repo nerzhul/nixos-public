@@ -4,6 +4,7 @@ let
   kubeletCfg = config.services.kubelet;
   kubernetes = with pkgs; buildGo125Module rec {
     pname = "kubernetes";
+    # renovate: datasource=github-tags depName=kubernetes/kubernetes
     version = "1.35.3";
 
     # Generate hash like this

@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   kubeControllerManagerCfg = config.services.kubeControllerManager;
+  # renovate: datasource=github-tags depName=kubernetes/kubernetes
   version = "v1.35.3";
   b64 = import ../util/base64.nix { inherit lib; };
 in

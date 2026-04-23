@@ -1,7 +1,9 @@
 { config, pkgs, lib, ... }:
 let
-  version = "v0.13.6-amd64";
-  version-postgres = "17.6";
+  # renovate: datasource=docker depName=rancher/kine
+  version = "v0.13.19-amd64";
+  # renovate: datasource=docker depName=library/postgres
+  version-postgres = "17.9";
   kineCfg = config.services.kine;
 in
 with lib;
