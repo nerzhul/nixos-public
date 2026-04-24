@@ -2,7 +2,7 @@
 let
   b64 = import ../util/base64.nix { inherit lib; };
   kubeletCfg = config.services.kubelet;
-  kubernetes = with pkgs; buildGo125Module rec {
+  kubernetes = with pkgs; buildGo126Module rec {
     pname = "kubernetes";
     # renovate: datasource=github-tags depName=kubernetes/kubernetes
     version = "1.36.0";
