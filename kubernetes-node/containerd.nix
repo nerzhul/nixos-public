@@ -4,15 +4,15 @@ let
   containerd = with pkgs; buildGoModule rec {
     pname = "containerd";
     # renovate: datasource=github-tags depName=containerd/containerd
-    version = "2.2.3";
+    version = "2.3.0";
 
     # Generate hash like this
-    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v2.2.3.zip)
+    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/containerd/containerd/archive/v2.3.0.zip)
     src = fetchFromGitHub {
       owner = "containerd";
       repo = "containerd";
       rev = "v${version}";
-      hash = "sha256-jaOLZf246kmvBHHrwgvqrhxuh+n1HE6NDqckZK4tvnM=";
+      hash = "sha256-qdwzcXrMWZ/r0tsNw5OpJC3X2Kw3Yn92wRxNCjZhMw0=";
     };
 
     vendorHash = null;
