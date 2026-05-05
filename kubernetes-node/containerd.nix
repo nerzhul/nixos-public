@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   cfg = config.services.containerd;
-  containerd = with pkgs; buildGoModule rec {
+  containerd = with pkgs; buildGo126Module rec {
     pname = "containerd";
     # renovate: datasource=github-tags depName=containerd/containerd
     version = "2.3.0";
