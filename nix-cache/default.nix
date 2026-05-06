@@ -28,6 +28,9 @@ with lib;
   # attic cache info foo
 
   # To use cache
+  # Create a token
+  # atticd-atticadm make-token --sub pull --validity 365d  --pull "*"
+  # then configure nix settings
   # nix.settings = {
   #   substituters = [
   #     "http://<host>:8087/<cache>"
