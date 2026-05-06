@@ -4,9 +4,9 @@
   lib,
   ...
 }:
-let 
+let
   atticdCfg = config.services.atticd-secret;
-in 
+in
 with lib;
 {
   imports = [
@@ -23,9 +23,9 @@ with lib;
       content = mkOption {
         default = "";
         type = types.str;
-        description = ''The base64-encoded secret for generating JWTs for Atticd.'';
+        description = "The base64-encoded secret for generating JWTs for Atticd.";
       };
-    }
+    };
   };
 
   config = {
@@ -66,7 +66,7 @@ with lib;
     };
 
     environment.etc."atticd.env".text = ''
-ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64="${atticdCfg.content}"
-'';
+      ATTIC_SERVER_TOKEN_RS256_SECRET_BASE64="${atticdCfg.content}"
+    '';
   };
 }
