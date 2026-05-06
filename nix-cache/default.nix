@@ -26,11 +26,10 @@ with lib;
   # attic cache create foo
   # get public key
   # attic cache info foo
+  # make it publish
+  # attic cache configure foo --public
 
-  # To use cache
-  # Create a token
-  # atticd-atticadm make-token --sub pull --validity 365d  --pull "*"
-  # then configure nix settings
+  # To use cache configure nix settings
   # nix.settings = {
   #   substituters = [
   #     "http://<host>:8087/<cache>"
