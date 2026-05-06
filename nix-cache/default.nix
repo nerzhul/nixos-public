@@ -1,12 +1,19 @@
-{ config, pkgs, lib, ... }:
-with lib; {
-  config = {
-    # Active nix-serve et sa clé privée
-    services.nix-serve.enable = true;
-    services.nix-serve.secretKeyFile = "/var/cache-priv-key.pem";
-  };
-
-  imports = [ "${builtins.fetchGit { url = "https://github.com/zhaofengli/attic.git"; ref = "main"; }}/nixos/atticd.nix" ];
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib;
+{
+  imports = [
+    "${
+      builtins.fetchGit {
+        url = "https://github.com/zhaofengli/attic.git";
+        ref = "main";
+      }
+    }/nixos/atticd.nix"
+  ];
 
   services.atticd = {
     enable = true;
