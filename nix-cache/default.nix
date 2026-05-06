@@ -18,6 +18,30 @@ with lib;
     }/nixos/atticd.nix"
   ];
 
+  # To create a cache, first create a token with all permissions
+  # atticd-atticadm make-token --sub test --validity 1h --create-cache "*" --configure-cache "*" --configure-cache-retention "*" --destroy-cache "*" --pull "*" --push "*" --delete "*"
+  # Login
+  # attic login central http://localhost:8087 <token>
+  # Then create it
+  # attic cache create foo
+  # get public key
+  # attic cache info foo
+
+  # To use cache
+  # nix.settings = {
+  #   substituters = [
+  #     "http://<host>:8087/<cache>"
+  #   ];
+  #   trusted-public-keys = [
+  #     "<cache>:<public-key>"
+  #   ];
+  # };
+
+  # To push to cache
+  # atticd-atticadm make-token --sub ppush --validity 2h  --pull "*" --push "*" --delete "*"
+  # attic login central http://<host>:8087 <token>
+
+
   options = {
     services.atticd-secret = {
       content = mkOption {
