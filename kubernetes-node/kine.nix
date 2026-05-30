@@ -161,9 +161,9 @@ with lib;
             resources:
               requests:
                 cpu: 50m
-                memory: 256Mi
+                memory: 384Mi
               limits:
-                memory: 256Mi
+                memory: 384Mi
             securityContext:
               runAsNonRoot: true
               runAsUser: ${toString kineCfg.pgUid}
