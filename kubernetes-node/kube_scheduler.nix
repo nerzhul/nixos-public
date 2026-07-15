@@ -3,7 +3,7 @@ let
   b64 = import ../util/base64.nix { inherit lib; };
   kubeSchedulerCfg = config.services.kubeScheduler;
   # renovate: datasource=github-tags depName=kubernetes/kubernetes
-  version = "v1.36.0";
+  version = "v1.36.2";
 in
 with lib;
 {

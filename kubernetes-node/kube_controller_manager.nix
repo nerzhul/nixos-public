@@ -2,7 +2,7 @@
 let
   kubeControllerManagerCfg = config.services.kubeControllerManager;
   # renovate: datasource=github-tags depName=kubernetes/kubernetes
-  version = "v1.36.0";
+  version = "v1.36.2";
   b64 = import ../util/base64.nix { inherit lib; };
 in
 with lib;
