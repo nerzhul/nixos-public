@@ -5,15 +5,15 @@ let
   kubernetes = with pkgs; buildGo126Module rec {
     pname = "kubernetes";
     # renovate: datasource=github-tags depName=kubernetes/kubernetes
-    version = "1.36.2";
+    version = "1.36.3";
 
     # Generate hash like this
-    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/kubernetes/kubernetes/archive/v1.36.2.zip)
+    # nix hash to-sri --type sha256 $(nix-prefetch-url --unpack https://github.com/kubernetes/kubernetes/archive/v1.36.3.zip)
     src = fetchFromGitHub {
       owner = "kubernetes";
       repo = "kubernetes";
       rev = "v${version}";
-      hash = "sha256-vE+2iBoJvkRhJDAHMCrJLIJKD53YWRBN6fBUP4589OU=";
+      hash = "sha256-yqxE+it+uYQrJJs3TJI2D6IQRJizieUQyPQMLIOPWqA=";
     };
 
     vendorHash = null;

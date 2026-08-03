@@ -2,7 +2,7 @@
 let
   kubeApiServerCfg = config.services.kubeApiServer;
   # renovate: datasource=github-tags depName=kubernetes/kubernetes
-  version = "v1.36.2";
+  version = "v1.36.3";
 in
 with lib;
 {
