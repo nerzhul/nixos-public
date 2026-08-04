@@ -13,6 +13,7 @@
   services.containerd.enable = true;
   services.kubelet.enable = true;
   services.cloud-init.enable = true;
+  services.cloud-init.network.enable = false;
 
   services.cloud-init.settings.cloud_init_modules = [
     "migrator"
@@ -25,6 +26,5 @@
     "resolv_conf"
     "ca-certs"
     "users-groups"
-    "disable_ec2_metadata"
   ];
 }
