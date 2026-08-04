@@ -6,8 +6,8 @@
 }:
 
 let
-  modDirVersion = "6.1.63";
-  tag = "stable_20231123";
+  modDirVersion = "6.6.51";
+  tag = "stable_20241008";
 
   linux_rpi5 =
     (pkgs.buildLinux {
