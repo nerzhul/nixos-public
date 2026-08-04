@@ -36,6 +36,9 @@ let
       ignoreConfigErrors = true;
 
       structuredExtraConfig = with lib.kernel; {
+        MODULES = lib.mkForce yes;
+        MODULE_UNLOAD = lib.mkForce yes;
+        
         # mandatory for /boot
         NLS_CODEPAGE_437 = lib.mkForce yes;
         NLS_ISO8859_1   = lib.mkForce yes;
