@@ -36,6 +36,12 @@ let
       ignoreConfigErrors = true;
 
       structuredExtraConfig = with lib.kernel; {
+        # mandatory for /boot
+        NLS_CODEPAGE_437 = lib.mkForce yes;
+        NLS_ISO8859_1   = lib.mkForce yes;
+        FAT_FS          = lib.mkForce yes;
+        VFAT_FS         = lib.mkForce yes;
+        
         DRM_NOUVEAU = lib.mkForce no;
         DRM_AMDGPU = lib.mkForce no;
         DRM_RADEON = lib.mkForce no;
@@ -58,11 +64,6 @@ let
         DRM_QXL = lib.mkForce no;
 
         XEN = lib.mkForce no;
-        VIRTIO = lib.mkForce no;
-        VIRTIO_PCI = lib.mkForce no;
-        VIRTIO_BALLOON = lib.mkForce no;
-        VIRTIO_BLK = lib.mkForce no;
-        VIRTIO_NET = lib.mkForce no;
 
         BTRFS_FS = lib.mkForce no;
       };
