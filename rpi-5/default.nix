@@ -41,6 +41,17 @@ let
         NLS_ISO8859_1   = lib.mkForce yes;
         FAT_FS          = lib.mkForce yes;
         VFAT_FS         = lib.mkForce yes;
+
+        CRYPTO_ZSTD = lib.mkForce yes;
+        CRYPTO_LZO  = lib.mkForce yes;
+        CRYPTO_LZ4  = lib.mkForce yes;
+        ZSTD_COMPRESS   = lib.mkForce yes;
+        ZSTD_DECOMPRESS = lib.mkForce yes;
+        LZO_COMPRESS    = lib.mkForce yes;
+        LZO_DECOMPRESS  = lib.mkForce yes;
+
+        ZRAM = lib.mkForce yes;
+        ZSWAP = lib.mkForce yes;
         
         DRM_NOUVEAU = lib.mkForce no;
         DRM_AMDGPU = lib.mkForce no;
@@ -76,6 +87,7 @@ let
       (oldAttrs: {
         postConfigure = ''
           sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+          sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION_AUTO=.*/CONFIG_LOCALVERSION_AUTO=n/'
           sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
         '';
 
