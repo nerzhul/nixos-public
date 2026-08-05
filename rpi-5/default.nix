@@ -6,8 +6,8 @@
 }:
 
 let
-  modDirVersion = "6.6.51";
-  tag = "stable_20241008";
+  modDirVersion = "6.12.47";
+  tag = "stable_20250916";
 
   linux_rpi5 =
     (pkgs.buildLinux {
@@ -18,7 +18,7 @@ let
         owner = "raspberrypi";
         repo = "linux";
         rev = tag;
-        hash = "sha256-phCxkuO+jUGZkfzSrBq6yErQeO2Td+inIGHxctXbD5U=";
+        hash = "sha256-HG8Oc04V2t54l0SOn4gKmNJWQUrZfjWusgKcWvx74H0=";
       };
 
       defconfig = "bcm2712_defconfig";
