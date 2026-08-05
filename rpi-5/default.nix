@@ -6,8 +6,8 @@
 }:
 
 let
-  modDirVersion = "6.1.63";
-  tag = "stable_20231123";
+  modDirVersion = "6.6.51";
+  tag = "stable_20241008";
 
   linux_rpi5 =
     (pkgs.buildLinux {
@@ -18,7 +18,7 @@ let
         owner = "raspberrypi";
         repo = "linux";
         rev = tag;
-        hash = "sha256-4Rc57y70LmRFwDnOD4rHoHGmfxD9zYEAwYm9Wvyb3no=";
+        hash = "sha256-phCxkuO+jUGZkfzSrBq6yErQeO2Td+inIGHxctXbD5U=";
       };
 
       defconfig = "bcm2712_defconfig";
@@ -52,6 +52,9 @@ let
         ZSTD_DECOMPRESS = lib.mkForce yes;
         LZO_COMPRESS    = lib.mkForce yes;
         LZO_DECOMPRESS  = lib.mkForce yes;
+        DECOMPRESS_XZ = lib.mkForce yes;
+        XZ_DEC        = lib.mkForce yes;
+
 
         ZRAM = lib.mkForce yes;
         ZSWAP = lib.mkForce yes;
