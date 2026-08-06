@@ -33,7 +33,7 @@ let
         #iwlwifi = false;
       };
 
-      # ignoreConfigErrors = true;
+      ignoreConfigErrors = true;
 
       # structuredExtraConfig = with lib.kernel; {
       #   MODULES = lib.mkForce yes;
