@@ -6,8 +6,8 @@
 }:
 
 let
-  modDirVersion = "6.12.47";
-  tag = "stable_20250916";
+  modDirVersion = "6.18.39";
+  tag = "stable_20260724";
 
   linux_rpi5 =
     (pkgs.buildLinux {
@@ -18,7 +18,7 @@ let
         owner = "raspberrypi";
         repo = "linux";
         rev = tag;
-        hash = "sha256-HG8Oc04V2t54l0SOn4gKmNJWQUrZfjWusgKcWvx74H0=";
+        hash = "sha256-IT/SkF458oLmnFIPbN76Qp6s8KVxKQOC02XmN7NRdBc=";
       };
 
       defconfig = "bcm2712_defconfig";
@@ -33,57 +33,57 @@ let
         #iwlwifi = false;
       };
 
-      ignoreConfigErrors = true;
+      # ignoreConfigErrors = true;
 
-      structuredExtraConfig = with lib.kernel; {
-        MODULES = lib.mkForce yes;
-        MODULE_UNLOAD = lib.mkForce yes;
+      # structuredExtraConfig = with lib.kernel; {
+      #   MODULES = lib.mkForce yes;
+      #   MODULE_UNLOAD = lib.mkForce yes;
         
-        # mandatory for /boot
-        NLS_CODEPAGE_437 = lib.mkForce yes;
-        NLS_ISO8859_1   = lib.mkForce yes;
-        FAT_FS          = lib.mkForce yes;
-        VFAT_FS         = lib.mkForce yes;
+      #   # mandatory for /boot
+      #   NLS_CODEPAGE_437 = lib.mkForce yes;
+      #   NLS_ISO8859_1   = lib.mkForce yes;
+      #   FAT_FS          = lib.mkForce yes;
+      #   VFAT_FS         = lib.mkForce yes;
 
-        CRYPTO_ZSTD = lib.mkForce yes;
-        CRYPTO_LZO  = lib.mkForce yes;
-        CRYPTO_LZ4  = lib.mkForce yes;
-        ZSTD_COMPRESS   = lib.mkForce yes;
-        ZSTD_DECOMPRESS = lib.mkForce yes;
-        LZO_COMPRESS    = lib.mkForce yes;
-        LZO_DECOMPRESS  = lib.mkForce yes;
-        DECOMPRESS_XZ = lib.mkForce yes;
-        XZ_DEC        = lib.mkForce yes;
+      #   CRYPTO_ZSTD = lib.mkForce yes;
+      #   CRYPTO_LZO  = lib.mkForce yes;
+      #   CRYPTO_LZ4  = lib.mkForce yes;
+      #   ZSTD_COMPRESS   = lib.mkForce yes;
+      #   ZSTD_DECOMPRESS = lib.mkForce yes;
+      #   LZO_COMPRESS    = lib.mkForce yes;
+      #   LZO_DECOMPRESS  = lib.mkForce yes;
+      #   DECOMPRESS_XZ = lib.mkForce yes;
+      #   XZ_DEC        = lib.mkForce yes;
 
 
-        ZRAM = lib.mkForce yes;
-        ZSWAP = lib.mkForce yes;
+      #   ZRAM = lib.mkForce yes;
+      #   ZSWAP = lib.mkForce yes;
         
-        DRM_NOUVEAU = lib.mkForce no;
-        DRM_AMDGPU = lib.mkForce no;
-        DRM_RADEON = lib.mkForce no;
-        DRM_I915 = lib.mkForce no; # GPU Intel
-        DRM_VGEM = lib.mkForce no;
+      #   DRM_NOUVEAU = lib.mkForce no;
+      #   DRM_AMDGPU = lib.mkForce no;
+      #   DRM_RADEON = lib.mkForce no;
+      #   DRM_I915 = lib.mkForce no; # GPU Intel
+      #   DRM_VGEM = lib.mkForce no;
 
-        HYPERV = lib.mkForce no;
-        HYPERV_BALLOON = lib.mkForce no;
-        HYPERV_NET = lib.mkForce no;
-        HYPERV_KEYBOARD = lib.mkForce no;
-        FB_HYPERV = lib.mkForce no;
-        DRM_HYPERV = lib.mkForce no;
-        HYPERV_STORAGE = lib.mkForce no;
+      #   HYPERV = lib.mkForce no;
+      #   HYPERV_BALLOON = lib.mkForce no;
+      #   HYPERV_NET = lib.mkForce no;
+      #   HYPERV_KEYBOARD = lib.mkForce no;
+      #   FB_HYPERV = lib.mkForce no;
+      #   DRM_HYPERV = lib.mkForce no;
+      #   HYPERV_STORAGE = lib.mkForce no;
 
-        VMWARE_BALLOON = lib.mkForce no;
-        VMWARE_VMCI = lib.mkForce no;
-        VMWARE_PVSCSI = lib.mkForce no;
-        DRM_VMWGFX = lib.mkForce no;
-        DRM_VBOXVIDEO = lib.mkForce no;
-        DRM_QXL = lib.mkForce no;
+      #   VMWARE_BALLOON = lib.mkForce no;
+      #   VMWARE_VMCI = lib.mkForce no;
+      #   VMWARE_PVSCSI = lib.mkForce no;
+      #   DRM_VMWGFX = lib.mkForce no;
+      #   DRM_VBOXVIDEO = lib.mkForce no;
+      #   DRM_QXL = lib.mkForce no;
 
-        XEN = lib.mkForce no;
+      #   XEN = lib.mkForce no;
 
-        BTRFS_FS = lib.mkForce no;
-      };
+      #   BTRFS_FS = lib.mkForce no;
+      # };
 
       extraMeta = {
         platforms = [ "aarch64-linux" ];
