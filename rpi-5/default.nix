@@ -35,56 +35,6 @@ let
 
       ignoreConfigErrors = true;
 
-      # structuredExtraConfig = with lib.kernel; {
-      #   MODULES = lib.mkForce yes;
-      #   MODULE_UNLOAD = lib.mkForce yes;
-        
-      #   # mandatory for /boot
-      #   NLS_CODEPAGE_437 = lib.mkForce yes;
-      #   NLS_ISO8859_1   = lib.mkForce yes;
-      #   FAT_FS          = lib.mkForce yes;
-      #   VFAT_FS         = lib.mkForce yes;
-
-      #   CRYPTO_ZSTD = lib.mkForce yes;
-      #   CRYPTO_LZO  = lib.mkForce yes;
-      #   CRYPTO_LZ4  = lib.mkForce yes;
-      #   ZSTD_COMPRESS   = lib.mkForce yes;
-      #   ZSTD_DECOMPRESS = lib.mkForce yes;
-      #   LZO_COMPRESS    = lib.mkForce yes;
-      #   LZO_DECOMPRESS  = lib.mkForce yes;
-      #   DECOMPRESS_XZ = lib.mkForce yes;
-      #   XZ_DEC        = lib.mkForce yes;
-
-
-      #   ZRAM = lib.mkForce yes;
-      #   ZSWAP = lib.mkForce yes;
-        
-      #   DRM_NOUVEAU = lib.mkForce no;
-      #   DRM_AMDGPU = lib.mkForce no;
-      #   DRM_RADEON = lib.mkForce no;
-      #   DRM_I915 = lib.mkForce no; # GPU Intel
-      #   DRM_VGEM = lib.mkForce no;
-
-      #   HYPERV = lib.mkForce no;
-      #   HYPERV_BALLOON = lib.mkForce no;
-      #   HYPERV_NET = lib.mkForce no;
-      #   HYPERV_KEYBOARD = lib.mkForce no;
-      #   FB_HYPERV = lib.mkForce no;
-      #   DRM_HYPERV = lib.mkForce no;
-      #   HYPERV_STORAGE = lib.mkForce no;
-
-      #   VMWARE_BALLOON = lib.mkForce no;
-      #   VMWARE_VMCI = lib.mkForce no;
-      #   VMWARE_PVSCSI = lib.mkForce no;
-      #   DRM_VMWGFX = lib.mkForce no;
-      #   DRM_VBOXVIDEO = lib.mkForce no;
-      #   DRM_QXL = lib.mkForce no;
-
-      #   XEN = lib.mkForce no;
-
-      #   BTRFS_FS = lib.mkForce no;
-      # };
-
       extraMeta = {
         platforms = [ "aarch64-linux" ];
         hydraPlatforms = [ "aarch64-linux" ];
@@ -95,6 +45,10 @@ let
           sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
           sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION_AUTO=.*/CONFIG_LOCALVERSION_AUTO=n/'
           sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+
+          # Force-disable (any value -> '# CONFIG_X is not set')
+          sed -i $buildRoot/.config -E \
+            -e 's/^CONFIG_(DRM_NOUVEAU|DRM_AMDGPU|DRM_RADEON|DRM_I915|DRM_VGEM|HYPERV|HYPERV_BALLOON|HYPERV_NET|HYPERV_KEYBOARD|FB_HYPERV|DRM_HYPERV|HYPERV_STORAGE|VMWARE_BALLOON|VMWARE_VMCI|VMWARE_PVSCSI|DRM_VMWGFX|DRM_VBOXVIDEO|DRM_QXL|XEN|BTRFS_FS)=.*/# CONFIG_\1 is not set/'
         '';
 
         postFixup = ''
