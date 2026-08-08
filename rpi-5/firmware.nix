@@ -34,9 +34,5 @@ let
   };
 in
 {
-  system.extraDependencies = [ rpiFirmware ];
-
   environment.systemPackages = [ rpiFirmware ];
-
-  boot.kernelModules = [ "bcm2835_wdt" ];
 }
