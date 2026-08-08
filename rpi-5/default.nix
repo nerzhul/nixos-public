@@ -6,6 +6,7 @@
 }:
 
 let
+  # Remember to update firmware.nix and copy the updated DTB to /boot when bumping the kernel version (if updated)
   modDirVersion = "6.18.39";
   tag = "stable_20260724";
 
