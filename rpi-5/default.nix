@@ -72,8 +72,4 @@ let
 in
 {
   boot.kernelPackages = pkgs.linuxPackagesFor linux_rpi5;
-
-  imports = [
-    ./firmware.nix
-  ];
 }
