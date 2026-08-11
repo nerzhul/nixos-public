@@ -72,4 +72,10 @@ let
 in
 {
   boot.kernelPackages = pkgs.linuxPackagesFor linux_rpi5;
+
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+    swapDevices = 1;
+  };
 }
