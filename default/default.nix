@@ -19,9 +19,4 @@
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
-
-  services.journald.extraConfig = ''
-    SystemMaxUse=386M
-    Storage=volatile
-  '';
 }
