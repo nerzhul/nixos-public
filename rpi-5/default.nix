@@ -78,9 +78,4 @@ in
     memoryPercent = 50;
     swapDevices = 1;
   };
-
-  services.journald.extraConfig = ''
-    SystemMaxUse=386M
-    Storage=volatile
-  '';
 }
