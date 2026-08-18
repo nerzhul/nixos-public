@@ -20,4 +20,6 @@
     dates = "weekly";
     options = "--delete-older-than 30d";
   };
+
+  boot.tmp.useTmpfs = true;
 }
