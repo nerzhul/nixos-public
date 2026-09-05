@@ -3,7 +3,7 @@ let
   # renovate: datasource=docker depName=rancher/kine
   version = "v0.14.14";
   # renovate: datasource=docker depName=library/postgres
-  version-postgres = "17.10";
+  version-postgres = "17.11";
   kineCfg = config.services.kine;
 in
 with lib;
