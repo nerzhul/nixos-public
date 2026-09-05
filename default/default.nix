@@ -9,11 +9,11 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  services.journald.extraConfig = ''
-    Storage=volatile
-    RuntimeMaxUse=128M
-    SystemMaxUse=386M
-  '';
+  services.journald.settings.Journal = {
+    Storage = "volatile";
+    RuntimeMaxUse = "128M";
+    SystemMaxUse = "386M";
+  };
 
   nix.gc = {
     automatic = true;
