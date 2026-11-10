@@ -10,12 +10,24 @@ let
   modDirVersion = "6.18.60";
   tag = "stable_20261103";
 
+  # nixpkgs pinned to a specific commit, used to build the kernel
+  # https://github.com/NixOS/nixpkgs/commit/05e3259dac0a0924f25068bec0cd38c9c2ceb2ff
+  nixpkgsRev = "05e3259dac0a0924f25068bec0cd38c9c2ceb2ff";
+  pkgsPinned = import (pkgs.fetchFromGitHub {
+    owner = "NixOS";
+    repo = "nixpkgs";
+    rev = nixpkgsRev;
+    hash = "sha256-WEyRIBjlTxE0/S5Og/B2qQTr/JdfJHq5hoyez+RDjlA=";
+  }) {
+    inherit (pkgs.stdenv.hostPlatform) system;
+  };
+
   linux_rpi5 =
-    (pkgs.buildLinux {
+    (pkgsPinned.buildLinux {
       version = "${modDirVersion}-${tag}";
       inherit modDirVersion;
 
-      src = pkgs.fetchFromGitHub {
+      src = pkgsPinned.fetchFromGitHub {
         owner = "raspberrypi";
         repo = "linux";
         rev = tag;
@@ -25,8 +37,8 @@ let
       defconfig = "bcm2712_defconfig";
 
       kernelPatches = [
-        pkgs.kernelPatches.bridge_stp_helper
-        pkgs.kernelPatches.request_key_helper
+        pkgsPinned.kernelPatches.bridge_stp_helper
+        pkgsPinned.kernelPatches.request_key_helper
       ];
 
       features = {
@@ -71,5 +83,5 @@ let
 
 in
 {
-  boot.kernelPackages = pkgs.linuxPackagesFor linux_rpi5;
+  boot.kernelPackages = pkgsPinned.linuxPackagesFor linux_rpi5;
 }
