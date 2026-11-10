@@ -177,6 +177,7 @@ registerWithTaints:
 - {key: "${kubeletCfg.taintKey}", value: "true", effect: "NoSchedule"}
 '' else ""}
 rotateCertificates: true
+serverTLSBootstrap: true
 '';
     environment.etc."kubernetes/bootstrap.kubeconfig".text = ''
 apiVersion: v1
