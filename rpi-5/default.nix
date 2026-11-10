@@ -7,8 +7,8 @@
 
 let
   # Remember to update firmware.nix and copy the updated DTB to /boot when bumping the kernel version (if updated)
-  modDirVersion = "6.18.39";
-  tag = "stable_20260724";
+  modDirVersion = "6.18.60";
+  tag = "stable_20261103";
 
   linux_rpi5 =
     (pkgs.buildLinux {
@@ -19,7 +19,7 @@ let
         owner = "raspberrypi";
         repo = "linux";
         rev = tag;
-        hash = "sha256-IT/SkF458oLmnFIPbN76Qp6s8KVxKQOC02XmN7NRdBc=";
+        hash = "sha256-Qx3D2+K7lkH5P1NI4NKqcHXVGoPqAeEiu+bZqBfSdDs=";
       };
 
       defconfig = "bcm2712_defconfig";
