@@ -27,6 +27,7 @@ let
       kernelPatches = [
         pkgs.kernelPatches.bridge_stp_helper
         pkgs.kernelPatches.request_key_helper
+        pkgs.kernelPatches.tools_128bit_types
       ];
 
       features = {
