@@ -1,6 +1,34 @@
 { config, pkgs, lib, ... }:
 let
   cfg = config.services.containerd;
+  b64 = import ../util/base64.nix { inherit lib; };
+
+  registryUpstreams = {
+    "docker.io" = "https://registry-1.docker.io";
+    "ghcr.io" = "https://ghcr.io";
+  };
+
+  mkHostsToml = registry:
+    let
+      mirror = cfg.registryMirror;
+      upstream = registryUpstreams.${registry} or "https://${registry}";
+      authB64 = b64.toBase64 "${mirror.username}:${mirror.password}";
+      authHeader = lib.optionalString (mirror.username != null && mirror.password != null) ''
+
+      [host."${mirror.url}".header]
+        Authorization = ["Basic ${authB64}"]
+      '';
+    in
+      ''
+        server = "${upstream}"
+
+        [host."${mirror.url}"]
+          capabilities = ["pull", "resolve"]
+        ${authHeader}
+        [host."${upstream}"]
+          capabilities = ["pull", "resolve"]
+      '';
+
   containerd = with pkgs; buildGo126Module rec {
     pname = "containerd";
     # renovate: datasource=github-tags depName=containerd/containerd
@@ -67,11 +95,47 @@ with lib;
         type = with types; bool;
         description = ''Enable nvidia runtime support.'';
       };
+
+      registryMirror = mkOption {
+        default = null;
+        type = with types; nullOr (submodule {
+          options = {
+            url = mkOption {
+              type = types.str;
+              example = "https://harbor.cache.local";
+              description = ''URL of the pull-through cache proxy (e.g. Harbor, Dragonfly, Spegel).'';
+            };
+            username = mkOption {
+              default = null;
+              type = with types; nullOr str;
+              description = ''Optional username for authenticating against the cache proxy.'';
+            };
+            password = mkOption {
+              default = null;
+              type = with types; nullOr str;
+              description = ''Optional password for authenticating against the cache proxy.'';
+            };
+            registries = mkOption {
+              default = [ "docker.io" "ghcr.io" ];
+              type = with types; listOf str;
+              description = ''Registries to route through the cache proxy with upstream fallback.'';
+            };
+          };
+        });
+        description = ''
+          Configure a pull-through cache proxy for container image registries.
+          When set, containerd will try the cache proxy first and fall back to
+          the upstream registry on failure. Generates hosts.toml files under
+          /etc/containerd/certs.d/ and sets registry.config_path accordingly.
+        '';
+      };
     };
   };
   config = mkIf cfg.enable {
     environment.systemPackages = [ containerd ];
-	environment.etc."containerd/config.toml".text = lib.mkForce ''
+    environment.etc = lib.mkMerge [
+      {
+        "containerd/config.toml".text = lib.mkForce ''
 version = 3
 root = '/var/lib/containerd'
 state = '/run/containerd'
@@ -124,7 +188,7 @@ imports = []
       sandbox = 'registry.k8s.io/pause:3.10'
 
     [plugins.'io.containerd.cri.v1.images'.registry]
-      config_path = ""
+      config_path = "${if cfg.registryMirror != null then "/etc/containerd/certs.d" else ""}"
 
     [plugins.'io.containerd.cri.v1.images'.image_decryption]
       key_model = 'node'
@@ -365,7 +429,15 @@ supported-driver-capabilities = "compat32,compute,display,graphics,ngx,utility,v
   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
     BinaryName = "${pkgs.nvidia-container-toolkit}/bin/nvidia-container-runtime"
 '' else ""}
-'';
+      '';
+      }
+      (lib.mkIf (cfg.registryMirror != null) (
+        lib.listToAttrs (map (reg: {
+          name = "containerd/certs.d/${reg}/hosts.toml";
+          value.text = mkHostsToml reg;
+        }) cfg.registryMirror.registries)
+      ))
+    ];
 
     boot.kernel = {
       sysctl = {
